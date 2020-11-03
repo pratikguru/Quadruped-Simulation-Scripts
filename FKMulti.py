@@ -14,7 +14,7 @@ LINK_2 = 120
 LINK_3 = 110
 
 
-fig = plt.figure("FK")
+fig = plt.figure("IK")
 ax = plt.axes([0.05, 0.2, 0.90, 0.75], projection="3d")
 axe = plt.axes([0.25, 0.85, 0.001, 0.001])
 
@@ -74,10 +74,11 @@ def getFKFrame(theta_1, theta_2, theta_3):
   
 
 def plotFrame( theta_1, theta_2, theta_3, pltObj ):
+  
   frame = ( getFKFrame(
-              np.radians(theta_1), 
-              np.radians(theta_2 - 90), 
-              np.radians(theta_3 - 90)) )
+              np.radians(x), 
+              np.radians(theta_2), 
+              np.radians(theta_3)) )
     
   pltObj.cla() 
   pltObj.plot( 
