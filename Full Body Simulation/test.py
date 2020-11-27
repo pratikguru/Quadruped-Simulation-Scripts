@@ -6,7 +6,7 @@ import glob
 import time
 import random
 import numpy as np
-
+import serial
 
 from IK import *
 
@@ -35,7 +35,10 @@ class App(QMainWindow):
         except Exception as e:
             print (e)
             print ("main.ui could not be found!")
-        
+        self.serialObj = serial.Serial()
+        self.serialObj.timeout = 4
+        self.serialObj.port = "/dev/cu.usbmodem14101"
+        #self.serialObj.open()
         self.pointX = -130
         self.pointY = -120
         self.pointZ = 0
@@ -48,9 +51,19 @@ class App(QMainWindow):
         self.rotY = 0
         self.rotZ = 0 
 
+        self.trace = False
+        self.trajectory = False
         self.setXPos(self.pointX)
         self.setYPos(self.pointY)
         self.setZPos(self.pointZ)
+
+        self.pushButton_4.clicked.connect(lambda: self.handleIncrement("x"))
+        self.pushButton_6.clicked.connect(lambda: self.handleIncrement("y"))
+        self.pushButton_9.clicked.connect(lambda: self.handleIncrement("z"))
+
+        self.pushButton_5.clicked.connect(lambda: self.handleDecrement("x"))
+        self.pushButton_7.clicked.connect(lambda: self.handleDecrement("y"))
+        self.pushButton_8.clicked.connect(lambda: self.handleDecrement("z"))
 
         self.setXTranslate(self.translateX)
         self.setYTranslate(self.translateY)
@@ -79,6 +92,45 @@ class App(QMainWindow):
         self.pushButton.clicked.connect(self.resetValues)
         self.pushButton_2.clicked.connect(self.animateLegRaise)
         
+
+        self.radioButton.toggled.connect(self.handleRadioButtonChange)
+        self.radioButton_2.toggled.connect(self.handleToggleTrajectory)
+    
+    def handleToggleTrajectory(self):
+      self.trajectory = self.radioButton.isChecked()
+
+    def handleIncrement(self, value):
+      if value == "x":
+        x = self.pointX + 5
+        self.setXPos(x)
+        #self.serialObj.write(ord('+'))
+      if value == "y":
+        y = self.pointY + 5
+        self.setYPos(y)
+        #self.serialObj.write(bytearray(['+', '+']))
+      if value == "z":
+        z = self.pointZ + 5
+        self.setZPos(z)
+        #self.serialObj.write(ord('+++'))
+
+    def handleDecrement(self, value):
+      if value == "x":
+        x = self.pointX - 5
+        self.setXPos(x)
+        #self.serialObj.write(ord('-'))
+      if value == "y":
+        y = self.pointY - 5
+        self.setYPos(y)
+        #self.serialObj.write(ord('--'))
+      if value == "z":
+        z = self.pointZ - 5
+        self.setZPos(z)
+        #self.serialObj.write(ord('---'))
+
+    def handleRadioButtonChange(self):
+      self.trace = self.radioButton.isChecked()
+    ##60, 320, 250
+    #20, 300, 240
 
     def setXPos(self, pos):
       self.pointX = pos
@@ -127,11 +179,39 @@ class App(QMainWindow):
       self.horizontalSlider_11.setValue(self.rotZ)
       self.label_21.setText(str(pos))
 
+
+
     def animateLegRaise(self):
-      self.setXPos(85)
-      self.setYPos(85)
-      self.setZPos(120)
-      self.renderGraph()
+      speed = 2
+      total_points = 100
+      for x in range(0, int(total_points/speed)):
+        self.setXPos(120)
+        self.setYPos(120)
+        self.setZPos(x * speed)
+        plt.pause(0.0001)
+        self.renderGraph()
+
+      for x in range(0, 50):
+        self.setXPos(120-x * speed)
+        self.setYPos(120)
+        self.setZPos(100)
+        plt.pause(0.0001)
+        self.renderGraph()
+
+
+      for x in range(0, 50):
+        self.setXPos(21)
+        self.setYPos(120)
+        self.setZPos(100-x * speed)
+        plt.pause(0.0001)
+        self.renderGraph()
+
+      for x in range(0, 50):
+        self.setXPos(20+x * speed)
+        self.setYPos(120)
+        self.setZPos(0)
+        plt.pause(0.0001)
+        self.renderGraph()
         
             
 
@@ -144,20 +224,29 @@ class App(QMainWindow):
             y = self.pointY, 
             z = self.pointZ
         )
-
+      
       points = (
         getIKPoint( 
           rotatedPoints[0] - self.translateX,
           rotatedPoints[1] - self.translateY,
           rotatedPoints[2] - self.translateZ
       ))
-
-      plotFrame( points[0], points[1], points[2], self.ax)
-      plotFrame2DXY(points[0], points[1], points[2], self.ax2)
-      plotFrame2DXZ(points[0], points[1], points[2], self.ax3)
-      self.canvas.draw()
-      self.canvas2.draw()
-      self.canvas3.draw()
+      self.dial.setValue(points[0])
+      self.dial_2.setValue(points[1])
+      self.dial_3.setValue(points[2])
+      self.label_7.setText(str(points[0]))
+      self.label_8.setText(str(points[1]))
+      self.label_9.setText(str(points[2]))
+      plotFrame( points[0], points[1], points[2], self.ax, self.trace)
+      if self.trajectory:
+        plotTrajectory( points[0], points[1], points[2], self.ax)
+      
+      #plotFrame2DXY(points[0], points[1], points[2], self.ax2)
+      plt.draw()
+      #plotFrame2DXZ(points[0], points[1], points[2], self.ax3)
+      #self.canvas.draw()
+      #self.canvas2.draw()
+      #self.canvas3.draw()
       
 
 
@@ -224,25 +313,26 @@ class App(QMainWindow):
     def run(self):
       self.body = plt.figure("Full Body IK")
       self.ax = plt.axes([0.05, 0.2, 0.90, 0.75], projection="3d")
-      self.canvas = FigureCanvas(self.body)
-      self.gridLayout.addWidget(self.canvas)
+      # self.canvas = FigureCanvas(self.body)
+      # self.gridLayout.addWidget(self.canvas)
+      
 
 
-      self.topXY = plt.figure("TOP View")
-      self.ax2 = self.topXY.add_subplot(111)
-      self.canvas2 = FigureCanvas(self.topXY)
-      self.gridLayout_2.addWidget(self.canvas2)
+      # self.topXY = plt.figure("TOP View")
+      # self.ax2 = self.topXY.add_subplot(111)
+      # self.canvas2 = FigureCanvas(self.topXY)
+      # self.gridLayout_2.addWidget(self.canvas2)
 
-      self.sideXZ = plt.figure("Side XZ")
-      self.ax3 = self.sideXZ.add_subplot(111)
-      self.canvas3 = FigureCanvas(self.sideXZ)
-      self.gridLayout_3.addWidget(self.canvas3)
+      # self.sideXZ = plt.figure("Side XZ")
+      # self.ax3 = self.sideXZ.add_subplot(111)
+      # self.canvas3 = FigureCanvas(self.sideXZ)
+      # self.gridLayout_3.addWidget(self.canvas3)
 
       
-      self.canvas.draw()
-      self.canvas2.draw()
-      self.canvas3.draw()
-
+      #self.canvas.draw()
+      #self.canvas2.draw()
+      #self.canvas3.draw()
+      plt.show()
       self.renderGraph()
       
 
@@ -256,6 +346,7 @@ def main():
     widget = App()
     widget.show()
     widget.run()
+    
     sys.exit(app.exec_())
 
 if __name__ == "__main__":

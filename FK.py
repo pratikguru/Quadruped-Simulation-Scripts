@@ -19,13 +19,13 @@ ax = plt.axes([0.05, 0.2, 0.90, 0.75], projection="3d")
 axe = plt.axes([0.25, 0.85, 0.001, 0.001])
 
 axxval = plt.axes([0.35, 0.1, 0.45, 0.03])
-a0_val = Slider(axxval, "Theta 1", -300, 300, valinit=x_val)
+a0_val = Slider(axxval, "Theta 1", 0, 180, valinit=x_val)
 
 axyval = plt.axes([0.35, 0.0575, 0.45, 0.03])
-a1_val = Slider(axyval, "Theta 2", -300, 300, valinit=y_val)
+a1_val = Slider(axyval, "Theta 2", 0, 180, valinit=y_val)
 
 axzval = plt.axes([0.35, 0.015, 0.45, 0.03])
-a2_val = Slider(axzval, "Theta 3", -300, 300, valinit=z_val)
+a2_val = Slider(axzval, "Theta 3", 0, 180, valinit=z_val)
 
 
 

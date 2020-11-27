@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1440</width>
-    <height>900</height>
+    <width>646</width>
+    <height>785</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,9 +19,12 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>1421</width>
+      <width>621</width>
       <height>831</height>
      </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -32,7 +35,7 @@
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>331</width>
+        <width>391</width>
         <height>781</height>
        </rect>
       </property>
@@ -44,7 +47,7 @@
         <rect>
          <x>10</x>
          <y>30</y>
-         <width>291</width>
+         <width>371</width>
          <height>181</height>
         </rect>
        </property>
@@ -54,8 +57,8 @@
        <widget class="QLabel" name="label_4">
         <property name="geometry">
          <rect>
-          <x>260</x>
-          <y>30</y>
+          <x>300</x>
+          <y>40</y>
           <width>31</width>
           <height>16</height>
          </rect>
@@ -67,8 +70,8 @@
        <widget class="QSlider" name="horizontalSlider_2">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>80</y>
+          <x>50</x>
+          <y>90</y>
           <width>271</width>
           <height>31</height>
          </rect>
@@ -86,8 +89,8 @@
        <widget class="QSlider" name="horizontalSlider_3">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>120</y>
+          <x>50</x>
+          <y>130</y>
           <width>271</width>
           <height>41</height>
          </rect>
@@ -105,8 +108,8 @@
        <widget class="QLabel" name="label">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>30</y>
+          <x>50</x>
+          <y>40</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -118,8 +121,8 @@
        <widget class="QLabel" name="label_6">
         <property name="geometry">
          <rect>
-          <x>260</x>
-          <y>120</y>
+          <x>300</x>
+          <y>130</y>
           <width>31</width>
           <height>16</height>
          </rect>
@@ -131,8 +134,8 @@
        <widget class="QLabel" name="label_3">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>120</y>
+          <x>50</x>
+          <y>130</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -144,8 +147,8 @@
        <widget class="QLabel" name="label_5">
         <property name="geometry">
          <rect>
-          <x>260</x>
-          <y>70</y>
+          <x>300</x>
+          <y>80</y>
           <width>31</width>
           <height>16</height>
          </rect>
@@ -157,8 +160,8 @@
        <widget class="QLabel" name="label_2">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>70</y>
+          <x>50</x>
+          <y>80</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -170,8 +173,8 @@
        <widget class="QSlider" name="horizontalSlider">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>40</y>
+          <x>50</x>
+          <y>50</y>
           <width>271</width>
           <height>31</height>
          </rect>
@@ -184,6 +187,84 @@
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_4">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>50</y>
+          <width>31</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>&gt;</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_5">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>50</y>
+          <width>31</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>&lt;</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_6">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>90</y>
+          <width>31</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>&gt;</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_7">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>31</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>&lt;</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_8">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>130</y>
+          <width>31</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>&lt;</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_9">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>130</y>
+          <width>31</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>&gt;</string>
         </property>
        </widget>
       </widget>
@@ -496,19 +577,6 @@
         <string>Reset</string>
        </property>
       </widget>
-      <widget class="QScrollBar" name="verticalScrollBar">
-       <property name="geometry">
-        <rect>
-         <x>310</x>
-         <y>19</y>
-         <width>20</width>
-         <height>761</height>
-        </rect>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-      </widget>
       <widget class="QPushButton" name="pushButton_2">
        <property name="geometry">
         <rect>
@@ -522,51 +590,128 @@
         <string>Leg Raise</string>
        </property>
       </widget>
+      <widget class="QRadioButton" name="radioButton">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>670</y>
+         <width>100</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Trace</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_2">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>670</y>
+         <width>100</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Trajectory</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_2">
       <property name="geometry">
        <rect>
-        <x>350</x>
+        <x>410</x>
         <y>10</y>
-        <width>1051</width>
+        <width>191</width>
         <height>781</height>
        </rect>
       </property>
       <property name="title">
        <string>Simulation Area</string>
       </property>
-      <widget class="QWidget" name="gridLayoutWidget">
+      <widget class="QDial" name="dial">
        <property name="geometry">
         <rect>
-         <x>140</x>
-         <y>310</y>
-         <width>781</width>
-         <height>441</height>
+         <x>40</x>
+         <y>60</y>
+         <width>101</width>
+         <height>71</height>
         </rect>
        </property>
-       <layout class="QGridLayout" name="gridLayout"/>
+       <property name="maximum">
+        <number>180</number>
+       </property>
       </widget>
-      <widget class="QWidget" name="gridLayoutWidget_2">
+      <widget class="QDial" name="dial_2">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>401</width>
-         <height>261</height>
+         <x>40</x>
+         <y>140</y>
+         <width>101</width>
+         <height>71</height>
         </rect>
        </property>
-       <layout class="QGridLayout" name="gridLayout_2"/>
+       <property name="maximum">
+        <number>180</number>
+       </property>
       </widget>
-      <widget class="QWidget" name="gridLayoutWidget_3">
+      <widget class="QDial" name="dial_3">
        <property name="geometry">
         <rect>
-         <x>640</x>
-         <y>30</y>
-         <width>401</width>
-         <height>261</height>
+         <x>40</x>
+         <y>220</y>
+         <width>101</width>
+         <height>71</height>
         </rect>
        </property>
-       <layout class="QGridLayout" name="gridLayout_3"/>
+       <property name="maximum">
+        <number>180</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_7">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>91</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_8">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>130</y>
+         <width>81</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_9">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>210</y>
+         <width>81</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
       </widget>
      </widget>
     </widget>
@@ -576,16 +721,6 @@
      </attribute>
     </widget>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1440</width>
-     <height>22</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

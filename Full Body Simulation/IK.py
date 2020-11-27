@@ -14,9 +14,10 @@ rotationX = 0
 
 LINK_1 = 60
 LINK_2 = 120
-LINK_3 = 110
+LINK_3 = 60
 
-
+#UP -> 0 20 170
+#down -> 0 100 150
 
 
 def getIKPoint(x, y, z):
@@ -56,6 +57,8 @@ def points_in_circle(radius):
 
 
 def getFKFrame(theta_1, theta_2, theta_3):
+  
+
   T01 = np.array(
                 [
                   [math.cos(theta_1), -math.sin(theta_1), 0, 0], 
@@ -153,23 +156,72 @@ def handleRotate(
   return rotationMatrix
 
 
-def plotFrame( theta_1, theta_2, theta_3, pltObj ):  
+def plotTrajectory( theta_1, theta_2, theta_3, pltObj ):
   frame = ( getFKFrame(
-              -np.radians(theta_1), 
-              -np.radians(theta_2), 
-              -np.radians(theta_3)) )
+              np.radians(theta_1), 
+              np.radians(-theta_2), 
+              np.radians(-theta_3)) )
     
-  pltObj.cla() 
   pltObj.plot( 
-        [0, frame[0][0][3], frame[1][0][3], frame[2][0][3]], 
-        [0, frame[0][1][3], frame[1][1][3], frame[2][1][3]], 
-        [0, frame[0][2][3], frame[1][2][3], frame[2][2][3]], 
+      [frame[2][0][3]], 
+      [frame[2][1][3]], 
+      [frame[2][2][3]], 
+      "o-", 
+      markerSize=2, 
+      markerFacecolor="orange", 
+      linewidth=1, 
+      color="blue" 
+  )
+
+  pltObj.plot( 
+          [0, frame[0][0][3], frame[1][0][3], frame[2][0][3]], 
+          [0, frame[0][1][3], frame[1][1][3], frame[2][1][3]], 
+          [0, frame[0][2][3], frame[1][2][3], frame[2][2][3]], 
+          "o-", 
+          markerSize=2, 
+          markerFacecolor="orange", 
+          linewidth=1, 
+          color="blue" 
+      )
+ 
+  pltObj.set_xlim3d(-200, 200)
+  pltObj.set_ylim3d(-200, 200)
+  pltObj.set_zlim3d(-100, 200)
+  pltObj.set_xlabel("X-axis")
+  pltObj.set_ylabel("Y-axis")
+  pltObj.set_zlabel("Z-axis")
+  pltObj.set_axisbelow(True)
+
+def plotFrame( theta_1, theta_2, theta_3, pltObj, trace):  
+  frame = ( getFKFrame(
+              np.radians(theta_1), 
+              np.radians(-theta_2), 
+              np.radians(-theta_3)) )
+    
+  if not trace:
+    pltObj.plot( 
+        [frame[2][0][3]], 
+        [frame[2][1][3]], 
+        [frame[2][2][3]], 
         "o-", 
-        markerSize=3, 
+        markerSize=2, 
         markerFacecolor="orange", 
-        linewidth=2, 
+        linewidth=1, 
         color="blue" 
     )
+  else:
+  
+    pltObj.cla() 
+    pltObj.plot( 
+          [0, frame[0][0][3], frame[1][0][3], frame[2][0][3]], 
+          [0, frame[0][1][3], frame[1][1][3], frame[2][1][3]], 
+          [0, frame[0][2][3], frame[1][2][3], frame[2][2][3]], 
+          "o-", 
+          markerSize=2, 
+          markerFacecolor="orange", 
+          linewidth=1, 
+          color="blue" 
+      )
     
   pltObj.set_xlim3d(-200, 200)
   pltObj.set_ylim3d(-200, 200)
