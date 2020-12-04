@@ -19,7 +19,7 @@ LINK_3 = 60
 serialObj = serial.Serial()
 serialObj.timeout = 4
 serialObj.port = "/dev/cu.usbmodem14101"
-serialObj.open()
+#serialObj.open()
 fig = plt.figure("IK")
 
 
@@ -35,7 +35,8 @@ axzval = plt.axes([0.35, 0.015, 0.45, 0.03])
 a2_val = Slider(axzval, "Z", -300, 300, valinit=z_val)
 
 
-
+def constrain(val, min_val, max_val):
+    return min(max_val, max(min_val, val))
 
 def getIKPoint(x, y, z):
   try: 
@@ -181,33 +182,25 @@ def handleRotate(
 
 
 def plotFrame( theta_1, theta_2, theta_3, pltObj ):  
-  # theta_1 = np.interp(theta_1, [-200, 200], [0, 180])
-  # theta_2 = np.interp(theta_2, [-200, 200], [0, 180])
-  # theta_3 = np.interp(theta_3, [-200, 200], [0, 180])
+  #theta_1 = (np.interp(theta_1, [-180, 180], [0, 180]))
+  #theta_2 = (np.interp(-theta_2, [-180, 180], [0, 180]))
+  #theta_3 = (np.interp(-theta_3, [-180, 180], [0, 180]))
   frame = ( getFKFrame(
               np.radians(theta_1), 
-              np.radians((-theta_2 )), 
-              np.radians((-theta_3 ))) )
+              np.radians((-constrain(theta_2, 0, 180) )), 
+              np.radians((-constrain(theta_3, 0, 180) ))) )
     
-  # pltObj.cla() 
-  pltObj.plot( 
-        [frame[2][0][3]], 
-        [frame[2][1][3]], 
-        [frame[2][2][3]], 
-        "o-", 
-        markerSize=2, 
-        markerFacecolor="orange", 
-        linewidth=3, 
-        color="blue" 
-    )
+  
+  pltObj.cla()
+
   pltObj.plot( 
         [0, frame[0][0][3], frame[1][0][3], frame[2][0][3]], 
         [0, frame[0][1][3], frame[1][1][3], frame[2][1][3]], 
         [0, frame[0][2][3], frame[1][2][3], frame[2][2][3]], 
         "o-", 
-        markerSize=0.02, 
+        markerSize=2, 
         markerFacecolor="orange", 
-        linewidth=0.03, 
+        linewidth=0.2, 
         color="blue" 
     )
   
@@ -225,7 +218,7 @@ def update_a0_val(val):
     x_val = val
     points = (getIKPoint(x_val, y_val, z_val))
     print(points)
-    serialObj.write( ord('+') )
+    #serialObj.write( ord('+') )
     plotFrame(points[0], points[1], points[2], ax)
     
     

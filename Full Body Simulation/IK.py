@@ -13,7 +13,7 @@ z_val = 90
 rotationX = 0
 
 LINK_1 = 60
-LINK_2 = 120
+LINK_2 = 80
 LINK_3 = 60
 
 #UP -> 0 20 170
@@ -56,7 +56,7 @@ def points_in_circle(radius):
 
 
 
-def getFKFrame(theta_1, theta_2, theta_3):
+def getFKFrame(theta_1, theta_2, theta_3, coxa, tibia, femur):
   
 
   T01 = np.array(
@@ -70,7 +70,7 @@ def getFKFrame(theta_1, theta_2, theta_3):
 
   T02 = np.array(
                  [
-                  [math.cos(theta_2), -math.sin(theta_2), 0, LINK_1],
+                  [math.cos(theta_2), -math.sin(theta_2), 0, coxa],
                   [0, 0, -1, 0],
                   [math.sin(theta_2), math.cos(theta_2), 0, 0],
                   [0, 0, 0, 1]
@@ -79,7 +79,7 @@ def getFKFrame(theta_1, theta_2, theta_3):
 
   T03 = np.array(
                   [
-                    [math.cos(theta_3), -math.sin(theta_3), 0, LINK_2],
+                    [math.cos(theta_3), -math.sin(theta_3), 0, tibia],
                     [math.sin(theta_3), math.cos(theta_3), 0, 0],
                     [0, 0, 1, 0],
                     [0, 0, 0, 1]
@@ -88,7 +88,7 @@ def getFKFrame(theta_1, theta_2, theta_3):
 
   T04 = np.array(
     [
-      [1, 0, 0, LINK_3],
+      [1, 0, 0, femur],
       [0, 1, 0, 0],
       [0, 0, 1, 0],
       [0, 0, 0, 1]
@@ -156,11 +156,13 @@ def handleRotate(
   return rotationMatrix
 
 
-def plotTrajectory( theta_1, theta_2, theta_3, pltObj ):
+def plotTrajectory( theta_1, theta_2, theta_3, pltObj, coxa, tibia, femur ):
   frame = ( getFKFrame(
-              np.radians(theta_1), 
-              np.radians(-theta_2), 
-              np.radians(-theta_3)) )
+              np.radians(theta_1[0]), 
+              np.radians(-theta_2[0]), 
+              np.radians(-theta_3[0]),
+              coxa, tibia, femur
+              ) )
     
   pltObj.plot( 
       [frame[2][0][3]], 
@@ -174,16 +176,16 @@ def plotTrajectory( theta_1, theta_2, theta_3, pltObj ):
   )
 
   pltObj.plot( 
-          [0, frame[0][0][3], frame[1][0][3], frame[2][0][3]], 
-          [0, frame[0][1][3], frame[1][1][3], frame[2][1][3]], 
-          [0, frame[0][2][3], frame[1][2][3], frame[2][2][3]], 
-          "o-", 
-          markerSize=2, 
-          markerFacecolor="orange", 
-          linewidth=1, 
-          color="blue" 
-      )
- 
+      [0, frame[0][0][3], frame[1][0][3], frame[2][0][3]], 
+      [0, frame[0][1][3], frame[1][1][3], frame[2][1][3]], 
+      [0, frame[0][2][3], frame[1][2][3], frame[2][2][3]], 
+      "o-", 
+      markerSize=2, 
+      markerFacecolor="orange", 
+      linewidth=1, 
+      color="blue" 
+  )
+    
   pltObj.set_xlim3d(-200, 200)
   pltObj.set_ylim3d(-200, 200)
   pltObj.set_zlim3d(-100, 200)
@@ -192,44 +194,143 @@ def plotTrajectory( theta_1, theta_2, theta_3, pltObj ):
   pltObj.set_zlabel("Z-axis")
   pltObj.set_axisbelow(True)
 
-def plotFrame( theta_1, theta_2, theta_3, pltObj, trace):  
-  frame = ( getFKFrame(
-              np.radians(theta_1), 
-              np.radians(-theta_2), 
-              np.radians(-theta_3)) )
+
+
+def plotFrame( theta_1, theta_2, theta_3, pltObj, trace, radius, coxa, tibia, femur):  
+  frame_1 = ( getFKFrame(
+              np.radians(theta_1[0]), 
+              np.radians(-theta_2[0]), 
+              np.radians(-theta_3[0]), coxa, tibia, femur) )
+  
+  frame_2 = ( getFKFrame(
+            np.radians(theta_1[1]), 
+            np.radians(-theta_2[1]), 
+            np.radians(-theta_3[1]), coxa, tibia, femur) )
+ 
+  frame_3 = ( getFKFrame(
+          np.radians(theta_1[2]), 
+          np.radians(-theta_2[2]), 
+          np.radians(-theta_3[2]), coxa, tibia, femur) )
+
+  frame_4 = ( getFKFrame(
+            np.radians(theta_1[3]), 
+            np.radians(-theta_2[3]), 
+            np.radians(-theta_3[3]), coxa, tibia, femur) )
     
   if not trace:
+    pltObj.plot(
+      [radius, radius, -radius, -radius, radius],
+      [radius, -radius, -radius, radius, radius], 
+      [0, 0, 0, 0, 0],
+      "*-",
+      markerSize="2",
+      markerFacecolor="blue",
+      linewidth=1,
+      color="blue"
+    )
     pltObj.plot( 
-        [frame[2][0][3]], 
-        [frame[2][1][3]], 
-        [frame[2][2][3]], 
+        [-frame_1[2][0][3]-radius], 
+        [-frame_1[2][1][3]-radius], 
+        [frame_1[2][2][3]], 
+        "o-", 
+        markerSize=2, 
+        markerFacecolor="orange", 
+        linewidth=1, 
+        color="red" 
+    )
+    pltObj.plot( 
+        [frame_2[2][0][3] + radius], 
+        [frame_2[2][1][3] + radius], 
+        [frame_2[2][2][3]], 
+        "o-", 
+        markerSize=2, 
+        markerFacecolor="orange", 
+        linewidth=1, 
+        color="green" 
+    )
+    pltObj.plot( 
+        [-frame_3[2][0][3] - radius], 
+        [frame_3[2][1][3] + radius], 
+        [frame_3[2][2][3]], 
         "o-", 
         markerSize=2, 
         markerFacecolor="orange", 
         linewidth=1, 
         color="blue" 
     )
+    pltObj.plot( 
+        [frame_4[2][0][3] + radius], 
+        [-frame_4[2][1][3] - radius], 
+        [frame_4[2][2][3]], 
+        "o-", 
+        markerSize=2, 
+        markerFacecolor="orange", 
+        linewidth=1, 
+        color="purple" 
+    )
   else:
   
     pltObj.cla() 
+    pltObj.plot(
+      [radius, radius, -radius, -radius, radius],
+      [radius, -radius, -radius, radius, radius], 
+      [0, 0, 0, 0, 0],
+      "*-",
+      markerSize="2",
+      markerFacecolor="blue",
+      linewidth=1,
+      color="blue"
+    )
     pltObj.plot( 
-          [0, frame[0][0][3], frame[1][0][3], frame[2][0][3]], 
-          [0, frame[0][1][3], frame[1][1][3], frame[2][1][3]], 
-          [0, frame[0][2][3], frame[1][2][3], frame[2][2][3]], 
+          [-radius, -frame_1[0][0][3]-radius, -frame_1[1][0][3]-radius, -frame_1[2][0][3]-radius], 
+          [-radius, -frame_1[0][1][3]-radius, -frame_1[1][1][3]-radius, -frame_1[2][1][3]-radius], 
+          [0, frame_1[0][2][3], frame_1[1][2][3], frame_1[2][2][3]], 
+          "o-", 
+          markerSize=2, 
+          markerFacecolor="orange", 
+          linewidth=1, 
+          color="red" 
+      )
+
+    pltObj.plot( 
+          [radius, frame_2[0][0][3]+radius, frame_2[1][0][3]+radius, frame_2[2][0][3] + radius], 
+          [radius, frame_2[0][1][3]+radius, frame_2[1][1][3]+radius, frame_2[2][1][3]+radius], 
+          [0, frame_2[0][2][3], frame_2[1][2][3], frame_2[2][2][3]], 
+          "o-", 
+          markerSize=2, 
+          markerFacecolor="orange", 
+          linewidth=1, 
+          color="green" 
+      )
+
+    pltObj.plot( 
+          [-radius, -frame_3[0][0][3]-radius, -frame_3[1][0][3]-radius, -frame_3[2][0][3]-radius], 
+          [radius, frame_3[0][1][3]+radius, frame_3[1][1][3]+radius, frame_3[2][1][3]+radius], 
+          [0, frame_3[0][2][3], frame_3[1][2][3], frame_3[2][2][3]], 
           "o-", 
           markerSize=2, 
           markerFacecolor="orange", 
           linewidth=1, 
           color="blue" 
       )
+    pltObj.plot( 
+          [radius, frame_4[0][0][3]+radius, frame_4[1][0][3]+radius, frame_4[2][0][3]+radius], 
+          [-radius, -frame_4[0][1][3]-radius, -frame_4[1][1][3]-radius, -frame_4[2][1][3]-radius], 
+          [0, frame_4[0][2][3], frame_4[1][2][3], frame_4[2][2][3]], 
+          "o-", 
+          markerSize=2, 
+          markerFacecolor="orange", 
+          linewidth=1, 
+          color="purple" 
+      )
     
-  pltObj.set_xlim3d(-200, 200)
-  pltObj.set_ylim3d(-200, 200)
-  pltObj.set_zlim3d(-100, 200)
-  pltObj.set_xlabel("X-axis")
-  pltObj.set_ylabel("Y-axis")
-  pltObj.set_zlabel("Z-axis")
-  pltObj.set_axisbelow(True)
+    pltObj.set_xlim3d(-200, 200)
+    pltObj.set_ylim3d(-200, 200)
+    pltObj.set_zlim3d(-100, 200)
+    pltObj.set_xlabel("X-axis")
+    pltObj.set_ylabel("Y-axis")
+    pltObj.set_zlabel("Z-axis")
+    pltObj.set_axisbelow(True)
 
   
   

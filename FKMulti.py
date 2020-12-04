@@ -76,7 +76,7 @@ def getFKFrame(theta_1, theta_2, theta_3):
 def plotFrame( theta_1, theta_2, theta_3, pltObj ):
   
   frame = ( getFKFrame(
-              np.radians(x), 
+              np.radians(theta_1), 
               np.radians(theta_2), 
               np.radians(theta_3)) )
     
