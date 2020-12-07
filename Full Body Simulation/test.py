@@ -128,6 +128,8 @@ class App(QMainWindow):
 
         self.pushButton_3.clicked.connect(self.clearGraph)
         self.pushButton_10.clicked.connect(self.animateLegCurve)
+        self.pushButton_11.clicked.connect(self.simulationSolutionSpace)
+
     def clearGraph(self):
       self.ax.cla()
       plt.draw()
@@ -302,6 +304,12 @@ class App(QMainWindow):
     def getEquidistantPoints(self,p1, p2, parts):
       return zip(np.linspace(p1[0], p2[0], parts+1),
                np.linspace(p1[1], p2[1], parts+1))
+
+    def simulationSolutionSpace(self):
+      data_points = 20
+      pass
+      #plt.pause(0.0001)
+
 
     def animateLegCurve(self):
       x = 100

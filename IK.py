@@ -187,8 +187,8 @@ def plotFrame( theta_1, theta_2, theta_3, pltObj ):
   #theta_3 = (np.interp(-theta_3, [-180, 180], [0, 180]))
   frame = ( getFKFrame(
               np.radians(theta_1), 
-              np.radians((-constrain(theta_2, 0, 180) )), 
-              np.radians((-constrain(theta_3, 0, 180) ))) )
+              np.radians(-theta_2), 
+              np.radians(-theta_3)))
     
   
   pltObj.cla()
