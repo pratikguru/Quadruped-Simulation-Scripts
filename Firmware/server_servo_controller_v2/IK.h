@@ -21,10 +21,6 @@ class IK {
           this->link_1 = link_1;
           this->link_2 = link_2;
           this->link_3 = link_3;
-
-          Serial.println("Link1:\t" + String(this->link_1));
-          Serial.println("Link2:\t" + String(this->link_2));
-          Serial.println("Link3:\t" + String(this->link_3));
         }
 
         Vector getIk( int x, int y, int z) {
@@ -35,7 +31,7 @@ class IK {
           auto theta_3 = atan2(sqrt(1 - pow(C, 2)), C);
         
           auto D = (cos(theta_3) * this->link_3) + this->link_2;
-          auto E = sin(theta_3) * this->link_3;
+          auto E = sin(theta_3)  * this->link_3;
           auto numerator = (A * D - B * E) / (pow(E, 2) + pow(D, 2));
           auto denominator = 1 - pow(numerator, 2);
           auto theta_2 = atan2(numerator, sqrt(denominator));

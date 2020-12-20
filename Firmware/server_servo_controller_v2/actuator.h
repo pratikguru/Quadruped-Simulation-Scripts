@@ -16,6 +16,8 @@ class Actuator {
 
         int link_length = 60;
 
+        
+
     Actuator(){
         this->pin = 0;
         this->offset = 0;
@@ -38,6 +40,7 @@ class Actuator {
         this->servo_min = servo_min;
         this->servo_max = servo_max;
         this->link_length = link_length;
+       
     }
 };
 

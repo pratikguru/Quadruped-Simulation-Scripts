@@ -282,14 +282,12 @@ void setup() {
   pwm.setPWMFreq(60);
 
   down(1);
-  down(2);
-  down(3);
-  down(4);
+
 
   for(int i = 0; i < 2; i++) {
-    getIk(0, 40, 130, 3);
+    getIk(0, 40, 130, 1);
     delay(300);
-    getIk(0, 100, 100, 3);
+    getIk(0, 100, 100, 1);
     delay(300);
   }
   //  for (int i = 0; i < 5; i++) {
