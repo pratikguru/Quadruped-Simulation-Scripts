@@ -12,7 +12,7 @@ int main(){
     Actuator* j3 = new Actuator(3, 100);
 
     Actuator* j4 = new Actuator(4, 100);
-    Actuator* j5 = new Actuator(5, 100);
+    Actuator* j5 = new Actuator(5, 100);    
     Actuator* j6 = new Actuator(6, 100);
 
     Actuator* j7 = new Actuator(7, 100);
