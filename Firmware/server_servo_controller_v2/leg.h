@@ -21,10 +21,10 @@ class Leg {
         Leg(int leg_number, String leg_name) {
             this->leg_number = leg_number;
             this->leg_name   = leg_name;
-            this->driver = Adafruit_PWMServoDriver(0x40);
+            this->driver = Adafruit_PWMServoDriver();
             this->driver.begin();
             this->driver.setPWMFreq(60);
-            Serial.println("Default constructor has been called");
+            
         }
 
         Leg(int leg_number, String leg_name, Actuator joint_1, Actuator joint_2, Actuator joint_3) {
@@ -34,12 +34,12 @@ class Leg {
             this->joint_1 = joint_1;
             this->joint_2 = joint_2;
             this->joint_3 = joint_3;
-            this->driver = Adafruit_PWMServoDriver(0x40);
+            this->driver = Adafruit_PWMServoDriver();
             this->driver.begin();
             this->driver.setPWMFreq(60);
             IK ik(joint_1.link_length, joint_2.link_length, joint_3.link_length);
             this->ik = ik;
-            Serial.println("Main constructor has been called");
+            
         }
 
         String getStats() {
@@ -68,7 +68,7 @@ class Leg {
         void actuateLeg(int theta_1, int theta_2, int theta_3) {   
           
           this->driver.setPWM(this->joint_1.pin, 0, this->angleToPulse( (theta_1) + this->joint_1.offset, this->joint_1));
-          this->driver.setPWM(this->joint_2.pin, 0, this->angleToPulse( 180 - (theta_2) + this->joint_2.offset, this->joint_2));
+          this->driver.setPWM(this->joint_2.pin, 0, this->angleToPulse( (theta_2) + this->joint_2.offset, this->joint_2));
           this->driver.setPWM(this->joint_3.pin, 0, this->angleToPulse( (theta_3) + this->joint_3.offset, this->joint_3));
         }
 

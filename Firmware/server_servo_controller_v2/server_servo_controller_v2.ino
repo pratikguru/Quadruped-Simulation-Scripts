@@ -5,7 +5,8 @@
 #include <cmath>
 #include <iomanip>
 
-//Adafruit_PWMServoDriver driver = Adafruit_PWMServoDriver();
+#define RUN_ROBOT_ON_SERVER       true
+#define STATIC_SERVER_CREDENTIALS false
 
 int angleToPulse(int angle) {
   return map(angle, 0, 180, 100, 600);
@@ -26,15 +27,16 @@ WiFiServer server(80);
 
 int x, y, z = 0;
 int stepTiming = 0;
+int legCount = 1;
 
 int maxTime = 200;
 int minTime = 50;
 
 void up(Leg &leg) {
-  leg.moveLeg(0, 50, 40);
+  leg.moveLeg(0, 60, 40);
 }
 
-void down(Leg & leg){
+void down(Leg & leg) {
   leg.moveLeg(0, 50, 60);
 }
 
@@ -50,7 +52,7 @@ void backDown(Leg & leg) {
   leg.moveLeg(-10, 50, 50);
 }
 
-void backUp(Leg & leg){
+void backUp(Leg & leg) {
   leg.moveLeg(-10, 50, 40);
 }
 
@@ -59,26 +61,32 @@ void setup() {
   // put your setup code here, to run once:
 
   Serial.begin(115200);
+#if RUN_ROBOT_ON_SERVER
   Serial.print("Connecting to ");
   Serial.println(ssid);
-  
-  //  if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
-  //    Serial.println("Static settings failure");
-  //  }
-  
+
+#if STATIC_SERVER_CREDENTIALS
+  Serial.println("Setting Static Server Credentials");
+  if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
+    Serial.println("Static settings failure");
+  }
+#endif
+
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(400);
     Serial.print(".");
-    
   }
-
   Serial.println("");
   Serial.println("WiFi connected.");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-//  
-//  server.begin();
+  server.begin();
+#else
+  Serial.println("No Server Running");
+#endif
+
+
   Actuator *jnt1 = new Actuator(0, 0, 60);
   Actuator *j2 = new Actuator(1, 0, 120);
   Actuator *j3 = new Actuator(2, 0, 80);
@@ -99,38 +107,44 @@ void setup() {
   Leg* leg_2 = new Leg(2, "back_right",  *j4,   *j5,  *j6 );
   Leg* leg_3 = new Leg(3, "front_left",  *j7,   *j8,  *j9 );
   Leg* leg_4 = new Leg(4, "back_right",  *j10,  *j11, *jnt12 );
-  
+
   Serial.println(leg_1->getStats());
   Serial.println(leg_2->getStats());
   Serial.println(leg_3->getStats());
   Serial.println(leg_4->getStats());
-  
-  
-  leg_1->actuateLeg(90, 90, 90);
-  leg_2->actuateLeg(90, 90, 90);
-  leg_3->actuateLeg(90, 90, 90);
-  leg_4->actuateLeg(90, 90, 90);
 
 
-//  down(*leg_1);
-//  down(*leg_2);
-//  down(*leg_3);
-//  down(*leg_4);
-////
-//  for(int i = 0; i < 5; i++) {
-//    leg_1->actuateLeg(90, 0, 90);
-//    leg_2->actuateLeg(90, 0, 90);
-//    leg_3->actuateLeg(90, 0, 90);
-//    leg_4->actuateLeg(90, 0, 90);
-//    delay(500);
-//    leg_1->actuateLeg(90, 90, 0);
-//    leg_2->actuateLeg(90, 90, 0);
-//    leg_3->actuateLeg(90, 90, 0);
-//    leg_4->actuateLeg(90, 90, 0);
-//    delay(500);
-//  }
-  
-  while (0) {
+  up(*leg_1);
+  up(*leg_2);
+  up(*leg_3);
+  up(*leg_4);
+  delay(500);
+  down(*leg_1);
+  down(*leg_2);
+  down(*leg_3);
+  down(*leg_4);
+  delay(500);
+
+  //  down(*leg_1);
+  //  down(*leg_2);
+  //  down(*leg_3);
+  //  down(*leg_4);
+  ////
+  //  for(int i = 0; i < 5; i++) {
+  //    leg_1->actuateLeg(90, 0, 90);
+  //    leg_2->actuateLeg(90, 0, 90);
+  //    leg_3->actuateLeg(90, 0, 90);
+  //    leg_4->actuateLeg(90, 0, 90);
+  //    delay(500);
+  //    leg_1->actuateLeg(90, 90, 0);
+  //    leg_2->actuateLeg(90, 90, 0);
+  //    leg_3->actuateLeg(90, 90, 0);
+  //    leg_4->actuateLeg(90, 90, 0);
+  //    delay(500);
+  //  }
+
+
+  while (1) {
     WiFiClient client = server.available();   // listen for incoming clients
 
     if (client) {
@@ -144,8 +158,10 @@ void setup() {
           }
 
           Serial.println();
-          if(dataPacket[0] == 11){
-            if (stepTiming >= maxTime){
+
+
+          if (dataPacket[0] == 11) {
+            if (stepTiming >= maxTime) {
               Serial.println("Max Step size reached");
             }
             else {
@@ -154,9 +170,9 @@ void setup() {
             Serial.println("Step Time: " + String(stepTiming));
           }
 
-          else if(dataPacket[0] == 12) {
-            
-            if(stepTiming <= minTime){
+          else if (dataPacket[0] == 12) {
+
+            if (stepTiming <= minTime) {
               Serial.println("Min step size reached");
             }
             else {
@@ -164,18 +180,59 @@ void setup() {
             }
             Serial.println("Step Time: " + String(stepTiming));
           }
-          
-          else if(dataPacket[0] == 10) {
-            frontUp(*leg_1);
+
+          else if (dataPacket[0] == 13) {
+            Serial.println("Resetting legs");
+            x = 0;
+            y = 50;
+            z = 40;
+            leg_1->moveLeg(x, y, z);
+          }
+          else if (dataPacket[0] == 20) {
+            Serial.println("Incrementing Leg");
+            if (legCount >= 4) {
+              legCount = 1;
+            }
+            else {
+              legCount += 1;
+            }
+            Serial.println("Leg: " + String (legCount));
+          }
+          else if (dataPacket[0] == 10) {
+            //frontUp(*leg_1);
+//            frontUp(*leg_2);
+//            frontUp(*leg_3);
+//            frontUp(*leg_4);
+//            leg_2->moveLeg(10, 50, 40);
+//            leg_3->moveLeg(10, 50, 40);
+            leg_4->moveLeg(10, 50, 40);
             delay(stepTiming);
-            frontDown(*leg_1);
+            //frontDown(*leg_1);
+//            leg_2->moveLeg(10, 50, 50);
+//            leg_3->moveLeg(10, 50, 50);
+            leg_4->moveLeg(10, 50, 50);
+//            frontDown(*leg_2);
+//            frontDown(*leg_3);
+//            frontDown(*leg_4);
             delay(stepTiming);
-            backDown(*leg_1);
+            //backDown(*leg_1);
+//            leg_2->moveLeg(-10, 50, 50);
+//            leg_3->moveLeg(-10, 50, 50);
+            leg_4->moveLeg(-10, 50, 50);
+//            backDown(*leg_2);
+//            backDown(*leg_3);
+//            backDown(*leg_4);
             delay(stepTiming);
-            backUp(*leg_1);
+            //backUp(*leg_1);
+//            leg_2->moveLeg(-10, 50, 40);
+//            leg_3->moveLeg(-10, 50, 40);
+            leg_4->moveLeg(-10, 50, 40);
+//            backUp(*leg_2);
+//            backUp(*leg_3);
+//            backUp(*leg_4);
             delay(stepTiming);
           }
-          else if(dataPacket[0] == 1){
+          else if (dataPacket[0] == 1) {
             x += 5;
             leg_1->moveLeg(x, y, z);
           }
@@ -195,21 +252,19 @@ void setup() {
             z += 5;
             leg_1->moveLeg(x, y, z);
           }
-          else if(dataPacket[0] == 6) {
+          else if (dataPacket[0] == 6) {
             z -= 5;
             leg_1->moveLeg(x, y, z);
           }
-
-          //leg_1->moveLeg(dataPacket[0], dataPacket[1], dataPacket[2]);
-
           Serial.println("X: " + String(x) + " Y: " + String(y) + " Z: " + String(z));
           Serial.println();
           client.stop();
         }
       }
     }
-    delay(5);
+    delay(3);
   }
+
 }
 
 

@@ -25,10 +25,9 @@ class PS4Controller(object):
         self.axisMode = False
         self.controller = pygame.joystick.Joystick(0)
         self.controller.init()
-        self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.serversocket.connect((self.HOST, self.PORT))
-        # bind the socket to a public host, and a well-known port
-        #self.serversocket.bind((self.HOST, 80))
+        self.HOST = '192.168.0.248'
+        self.PORT = 80
+
 
 
 
@@ -38,6 +37,12 @@ class PS4Controller(object):
     def getEquidistantPoints(self,p1, p2, parts):
         return zip(np.linspace(p1[0], p2[0], parts+1),
                np.linspace(p1[1], p2[1], parts+1))
+    
+    def sendLoad(self, load:bytearray):
+      with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                              s.connect((self.HOST, self.PORT))
+                              s.sendall(load)
+
     def listen(self):
         """Listen for events to happen"""
         
@@ -69,39 +74,23 @@ class PS4Controller(object):
                 # In the current setup, I have the state simply printing out to the screen.
                 
                 os.system('clear')
-                #0, -40, 170 - up position.
-                #0, -100, 100
-                #0, -80, -70 - down position.
-                # if self.button_data[5]:
-                #     print("Transmititng")
-                #     try:
-                #         print( self._map( self.axis_data[0], -1, 1, 0, 255 ))
-                #         print( self._map( self.axis_data[1], -1, 1, 0, 255 ))
-                #         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                #             print(self.HOST)
-                #             s.connect((self.HOST, self.PORT))
-                #             s.sendall(bytearray(
-                #                 [
-                #                     self._map( self.axis_data[0], -1, 1, 0, 255 ), 
-                #                     self._map( self.axis_data[1], -1, 1, 0, 255 ), 
-                #                     self._map( self.axis_data[4], -1, 1, 0, 255 )
-                #                     ]))
-                #     except KeyError:
-                #         print("Roll Stick 1, 360!")
                 pprint.pprint(self.button_data)
                 pprint.pprint(self.axis_data)
                 pprint.pprint(self.hat_data)
+
+                if self.button_data[3]:
+                  print("Incrementing Leg")
+                  self.sendLoad(bytearray([20]))
+                  
                 if self.button_data[0]: #Holding X
                   print("Holding X")
                   if self.hat_data[0][1] == 1:
-                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                              s.connect((self.HOST, self.PORT))
-                              s.sendall(bytearray([1]))
+                    self.sendLoad(bytearray([1]))
+                    
                   
                   if self.hat_data[0][1] == -1:
-                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                              s.connect((self.HOST, self.PORT))
-                              s.sendall(bytearray([2]))
+                    self.sendLoad(bytearray([2]))
+                    
 
                       
                             
@@ -109,50 +98,40 @@ class PS4Controller(object):
                   print("Holding Y")
                   
                   if self.hat_data[0][1] == 1:
-                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                              s.connect((self.HOST, self.PORT))
-                              s.sendall(bytearray([3]))
+                    self.sendLoad(bytearray([3]))
+                    
                   
                   if self.hat_data[0][1] == -1:
-                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                              s.connect((self.HOST, self.PORT))
-                              s.sendall(bytearray([4]))
+                    self.sendLoad(bytearray([4]))
+                    
                  
                             
                 
                 if self.button_data[2]: #Holding Z
                   print("Holding Z")
                   if self.hat_data[0][1] == 1:
-                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                              s.connect((self.HOST, self.PORT))
-                              s.sendall(bytearray([5]))
-                  
+                    self.sendLoad(bytearray([5]))
+                    
                   if self.hat_data[0][1] == -1:
-                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                              s.connect((self.HOST, self.PORT))
-                              s.sendall(bytearray([6]))
+                    self.sendLoad(bytearray([6]))
+                    
+                  
 
                 if self.button_data[9]:
                   print ("Starting Animation")
                   data = self.getEquidistantPoints( (50, 40), (140, 90), 20 )
-                  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                              s.connect((self.HOST, self.PORT))
-                              s.sendall(bytearray([10]))
+                  self.sendLoad(bytearray([10]))
                 
                 if self.button_data[4]:
                   print ("Incrementing Speed")
                   data = self.getEquidistantPoints( (50, 40), (140, 90), 20 )
-                  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                              s.connect((self.HOST, self.PORT))
-                              s.sendall(bytearray([11]))
+                  self.sendLoad(bytearray([11]))
 
                 
                 if self.button_data[5]:
                   print ("Decrementing Speed")
                   data = self.getEquidistantPoints( (50, 40), (140, 90), 20 )
-                  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                              s.connect((self.HOST, self.PORT))
-                              s.sendall(bytearray([12]))
+                  self.sendLoad(bytearray([12]))
 
                   
                 if  self.button_data[8]:
@@ -162,7 +141,11 @@ class PS4Controller(object):
                   self.axisMode = mode
                   print("Axis Mode: " + str(self.axisMode))
 
-                if self.button_data[10]:
+                if self.button_data[11]:
+                  print("Resetting legs")
+                  self.sendLoad(bytearray([13]))
+
+                if self.button_data[12]:
                     print("Goodbye!")
                     exit(0)
 
