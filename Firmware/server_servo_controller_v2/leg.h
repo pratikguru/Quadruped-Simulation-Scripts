@@ -69,7 +69,7 @@ class Leg {
           
           this->driver.setPWM(this->joint_1.pin, 0, this->angleToPulse( (theta_1) + this->joint_1.offset, this->joint_1));
           this->driver.setPWM(this->joint_2.pin, 0, this->angleToPulse( 180 - (theta_2) + this->joint_2.offset, this->joint_2));
-          this->driver.setPWM(this->joint_3.pin, 0, this->angleToPulse( 180 - (theta_3) + this->joint_3.offset, this->joint_3));
+          this->driver.setPWM(this->joint_3.pin, 0, this->angleToPulse( (theta_3) + this->joint_3.offset, this->joint_3));
         }
 
 };

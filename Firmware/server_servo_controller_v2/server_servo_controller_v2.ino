@@ -65,8 +65,8 @@ void setup() {
   //  if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
   //    Serial.println("Static settings failure");
   //  }
+  
   WiFi.begin(ssid, password);
-
   while (WiFi.status() != WL_CONNECTED) {
     delay(400);
     Serial.print(".");
@@ -77,34 +77,60 @@ void setup() {
   Serial.println("WiFi connected.");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-  
-  server.begin();
-  Actuator *jnt1 = new Actuator(0, 10, 60);
+//  
+//  server.begin();
+  Actuator *jnt1 = new Actuator(0, 0, 60);
   Actuator *j2 = new Actuator(1, 0, 120);
-  Actuator *j3 = new Actuator(2, 10, 80);
+  Actuator *j3 = new Actuator(2, 0, 80);
 
-  Actuator *j4 = new Actuator(4, 100, 60);
-  Actuator *j5 = new Actuator(5, 100, 120);
-  Actuator *j6 = new Actuator(6, 100, 60);
+  Actuator *j4 = new Actuator(4, 0, 60);
+  Actuator *j5 = new Actuator(5, 0, 120);
+  Actuator *j6 = new Actuator(6, 0, 60);
 
-  Actuator *j7 = new Actuator(7, 100, 60);
-  Actuator *j8 = new Actuator(8, 100, 120);
-  Actuator *j9 = new Actuator(9, 100, 60);
+  Actuator *j7 = new Actuator(8, 10, 60);
+  Actuator *j8 = new Actuator(9, 0, 120);
+  Actuator *j9 = new Actuator(10, 0, 60);
 
-  Actuator *j10 = new Actuator(10, 100, 60);
-  Actuator *j11 = new Actuator(11, 100, 120);
-  Actuator *jnt12 = new Actuator(12, 100, 60);
+  Actuator *j10 = new Actuator(12, 10, 60);
+  Actuator *j11 = new Actuator(13, 12, 120);
+  Actuator *jnt12 = new Actuator(15, 0, 60);
 
-  Leg* leg_1 = new Leg(1, "front_right", *jnt1, *j2, *j3);
-  Leg* leg_2 = new Leg(2, "back_right", *j4, *j5, * j6 );
-  Leg* leg_3 = new Leg(3, "front_left", *j7, *j8, *j9 );
-  Leg* leg_4 = new Leg(4, "back_right", *j10, *j11, *jnt12 );
+  Leg* leg_1 = new Leg(1, "front_right", *jnt1, *j2,  *j3);
+  Leg* leg_2 = new Leg(2, "back_right",  *j4,   *j5,  *j6 );
+  Leg* leg_3 = new Leg(3, "front_left",  *j7,   *j8,  *j9 );
+  Leg* leg_4 = new Leg(4, "back_right",  *j10,  *j11, *jnt12 );
+  
   Serial.println(leg_1->getStats());
-  up(*leg_1);
+  Serial.println(leg_2->getStats());
+  Serial.println(leg_3->getStats());
+  Serial.println(leg_4->getStats());
+  
+  
+  leg_1->actuateLeg(90, 90, 90);
+  leg_2->actuateLeg(90, 90, 90);
+  leg_3->actuateLeg(90, 90, 90);
+  leg_4->actuateLeg(90, 90, 90);
 
+
+//  down(*leg_1);
+//  down(*leg_2);
+//  down(*leg_3);
+//  down(*leg_4);
+////
+//  for(int i = 0; i < 5; i++) {
+//    leg_1->actuateLeg(90, 0, 90);
+//    leg_2->actuateLeg(90, 0, 90);
+//    leg_3->actuateLeg(90, 0, 90);
+//    leg_4->actuateLeg(90, 0, 90);
+//    delay(500);
+//    leg_1->actuateLeg(90, 90, 0);
+//    leg_2->actuateLeg(90, 90, 0);
+//    leg_3->actuateLeg(90, 90, 0);
+//    leg_4->actuateLeg(90, 90, 0);
+//    delay(500);
+//  }
   
-  
-  while (1) {
+  while (0) {
     WiFiClient client = server.available();   // listen for incoming clients
 
     if (client) {

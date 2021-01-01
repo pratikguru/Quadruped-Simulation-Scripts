@@ -1,6 +1,6 @@
 #include <Adafruit_PWMServoDriver.h>
 #define SERVOMIN  100 // this is the 'minimum' pulse length count (out of 4096)
-#define SERVOMAX  800 // this is the 'maximum' pulse length count (out of 4096)
+#define SERVOMAX  600 // this is the 'maximum' pulse length count (out of 4096)
 #define LINK_1 60
 #define LINK_2 80
 #define LINK_3 60
@@ -19,21 +19,21 @@ struct ServoObj {
   }
 };
 
-ServoObj leg_1_1(0, -20);
-ServoObj leg_1_2(1, -15);
-ServoObj leg_1_3(2, -15);
+ServoObj leg_1_1(0, 0);
+ServoObj leg_1_2(1, 0);
+ServoObj leg_1_3(2, 0);
 
-ServoObj leg_2_1(3, 10);
-ServoObj leg_2_2(4, 0);
-ServoObj leg_2_3(5, -10);
+ServoObj leg_2_1(4, 0);
+ServoObj leg_2_2(5, 0);
+ServoObj leg_2_3(6, 0);
 
-ServoObj leg_3_1(8, -10);
-ServoObj leg_3_2(9, -15);
-ServoObj leg_3_3(10, -20);
+ServoObj leg_3_1(8, 10);
+ServoObj leg_3_2(9, 0);
+ServoObj leg_3_3(10, 0);
 
-ServoObj leg_4_1(12, -10);
-ServoObj leg_4_2(13, -10);
-ServoObj leg_4_3(15, -20);
+ServoObj leg_4_1(12, 10);
+ServoObj leg_4_2(13, 0);
+ServoObj leg_4_3(15, 0);
 
 
 ServoObj servos[] = {
@@ -281,15 +281,12 @@ void setup() {
   pwm.begin();
   pwm.setPWMFreq(60);
 
-  down(1);
-
-
-  for(int i = 0; i < 2; i++) {
-    getIk(0, 40, 130, 1);
-    delay(300);
-    getIk(0, 100, 100, 1);
-    delay(300);
+  for(int i = 0; i < 12; i++) {
+    pwm.setPWM(servos[i].pin, 0, angleToPulse( (90) + servos[i].offset));
   }
+  
+
+
   //  for (int i = 0; i < 5; i++) {
   //    rotateRight();
   //
