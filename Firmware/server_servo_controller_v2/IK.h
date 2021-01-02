@@ -46,6 +46,7 @@ class IK {
              return vector;
           }
 
+          
           Vector vector(theta_1, theta_2, theta_3);
           return vector;
         }

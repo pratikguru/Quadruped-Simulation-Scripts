@@ -79,9 +79,15 @@ class PS4Controller(object):
                 pprint.pprint(self.hat_data)
 
                 if self.button_data[3]:
-                  print("Incrementing Leg")
-                  self.sendLoad(bytearray([20]))
-                  
+                    axis_data_1_x: int = 0
+                    try:
+                        axis_data_1_x = self.axis_data[1]
+                        axis_data_1_x = (self._map(axis_data_1_x, -1, 1, 0, 20))
+                    except KeyError as e:
+                        axis_data_1_x = 0
+                        print ("Roll Sticks!")
+                    self.sendLoad(bytearray([(axis_data_1_x)]))
+
                 if self.button_data[0]: #Holding X
                   print("Holding X")
                   if self.hat_data[0][1] == 1:
@@ -115,9 +121,7 @@ class PS4Controller(object):
                   if self.hat_data[0][1] == -1:
                     self.sendLoad(bytearray([6]))
                     
-                if self.button_data[6]:
-                  print("Body stance to Low")
-                  self.sendLoad(bytearray([1]))
+        
 
                 if self.button_data[9]:
                   print ("Starting Animation")
