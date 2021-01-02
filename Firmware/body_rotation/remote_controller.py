@@ -81,7 +81,7 @@ class PS4Controller(object):
                 
                 if self.button_data[8]:
                   print("Sending to Home Position")
-                  self.sendLoad(bytearray([99]))
+                  self.sendLoad(bytearray([3]))
 
                 if self.button_data[11]:
                     print("Toggling Bounce Mode")
@@ -167,13 +167,7 @@ class PS4Controller(object):
                   data = self.getEquidistantPoints( (50, 40), (140, 90), 20 )
                   self.sendLoad(bytearray([12]))
 
-                  
-                if  self.button_data[8]:
-                  print("Toggling Free Axis mode.")
-                  mode = self.axisMode 
-                  mode != mode
-                  self.axisMode = mode
-                  print("Axis Mode: " + str(self.axisMode))
+            
 
                 if self.button_data[12]:
                     print("Goodbye!")

@@ -303,6 +303,9 @@ void loop() {
           Serial.print(dataPacket[i]);
         }
         Serial.println();
+        if(dataPacket[0] > 20) {
+          return;
+        }
 
         if(dataPacket[0] == 1){
           Serial.println("Z-Translate ");
@@ -310,13 +313,24 @@ void loop() {
           getIk(0, points[dataPacket[1]][0], points[dataPacket[1]][1], 2 );
           getIk(0, points[dataPacket[1]][0], points[dataPacket[1]][1], 3 );
           getIk(0, points[dataPacket[1]][0], points[dataPacket[1]][1], 4 );
+          
+          
         }
         else if (dataPacket[0] == 2) {
           Serial.println("Z-Rotate");
+          Serial.println(globalZ);
           getIk(map(dataPacket[1], 0, 30, -30, 30), 40, dataPacket[2], 1 );
           getIk(map(dataPacket[1], 0, 30, -30, 30), 40, dataPacket[2], 2 );
           getIk(map(dataPacket[1], 0, 30, -30, 30), 40, dataPacket[2], 3 );
           getIk(map(dataPacket[1], 0, 30, -30, 30), 40, dataPacket[2], 4 );
+        }
+
+        else if (dataPacket[0] == 3){
+          Serial.println("Going to home position");
+          getIk(globalX, globalY, globalZ, 1 );
+          getIk(globalX, globalY, globalZ, 2 );
+          getIk(globalX, globalY, globalZ, 3 );
+          getIk(globalX, globalY, globalZ, 4 );
         }
       }
     }
