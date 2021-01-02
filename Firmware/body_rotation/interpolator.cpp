@@ -36,11 +36,11 @@ void lerp(Point const &pt1, Point const &pt2, float stops) {
 
 int main() {
     Point pt1;
-    pt1.x = -30;
-    pt1.y = 40;
+    pt1.x = 10;
+    pt1.y = 65;
 
     Point pt2;
-    pt2.x = 30;
-    pt2.y = 80;
+    pt2.x = 155;
+    pt2.y = 95;
     lerp(pt1, pt2, 50);
 }

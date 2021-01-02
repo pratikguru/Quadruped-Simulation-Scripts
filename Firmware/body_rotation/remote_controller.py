@@ -79,6 +79,10 @@ class PS4Controller(object):
                 pprint.pprint(self.axis_data)
                 pprint.pprint(self.hat_data)
                 
+                if self.button_data[8]:
+                  print("Sending to Home Position")
+                  self.sendLoad(bytearray([99]))
+
                 if self.button_data[11]:
                     print("Toggling Bounce Mode")
                     self.bounceMode = not self.bounceMode
