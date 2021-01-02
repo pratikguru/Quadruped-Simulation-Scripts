@@ -1,5 +1,7 @@
 #include <Adafruit_PWMServoDriver.h>
 #include <WiFi.h>
+#include "./helper.h"
+
 #define SERVOMIN  100 // this is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX  600 // this is the 'maximum' pulse length count (out of 4096)
 #define LINK_1 60
@@ -212,7 +214,7 @@ void getIk( int x, int y, int z, int leg) {
       }
 
   }
-  Serial.println(String(x) + " " + String(y) +  " " + String(z) + " " + String((theta_1)) + " " + String((theta_2)) + " " + String((theta_3)));
+  //Serial.println(String(x) + " " + String(y) +  " " + String(z) + " " + String((theta_1)) + " " + String((theta_2)) + " " + String((theta_3)));
 }
 
 
@@ -227,6 +229,11 @@ int globalZ = 40;
 int translateX = 0;
 int translateY = 0;
 int translateZ = 0;
+
+bool bounceMode = true;
+
+int maxDataPoints = 50;
+int minDataPoints = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -279,29 +286,7 @@ void setup() {
   getIk(globalX, globalY, globalZ, 4);
 }
 
-int points[][2] = {
-                  {60, 40},
-                  {60.75, 42.75},
-                  {61.5, 45.5},
-                  {62.25, 48.25},
-                  {63, 51},
-                  {63.75, 53.75},
-                  {64.5, 56.5},
-                  {65.25, 59.25},
-                  {66, 62},
-                  {66.75, 64.75},
-                  {67.5, 67.5},
-                  {68.25, 70.25},
-                  {69, 73},
-                  {69.75, 75.75},
-                  {70.5, 78.5},
-                  {71.25, 81.25},
-                  {72, 84},
-                  {72.75, 86.75},
-                  {73.5, 89.5},
-                  {74.25, 92.25},
-                  {75, 95}
-                  };
+
 
 
 void loop() {
@@ -319,31 +304,20 @@ void loop() {
         }
         Serial.println();
 
-        getIk(0, points[dataPacket[0]][0], points[dataPacket[0]][1], 1 );
-        getIk(0, points[dataPacket[0]][0], points[dataPacket[0]][1], 2 );
-        getIk(0, points[dataPacket[0]][0], points[dataPacket[0]][1], 3 );
-        getIk(0, points[dataPacket[0]][0], points[dataPacket[0]][1], 4 );
-        
-        // if(dataPacket[0]== 1) {
-        //   Serial.println("Going LOW");
-
-          
-        //     for(int j = 0; j < 20; j++) {
-        //       getIk(0, points[j][0], points[j][1], 1);
-        //       getIk(0, points[j][0], points[j][1], 2);
-        //       getIk(0, points[j][0], points[j][1], 3);
-        //       getIk(0, points[j][0], points[j][1], 4);
-        //     } 
-        // }
-        // else if (dataPacket[0]==2) {
-        //   Serial.println("Going High");
-        //     for(int j = 0; j < 20; j++) {
-        //       getIk(0, points[20-j][0], points[20-j][1], 1);
-        //       getIk(0, points[20-j][0], points[20-j][1], 2);
-        //       getIk(0, points[20-j][0], points[20-j][1], 3);
-        //       getIk(0, points[20-j][0], points[20-j][1], 4);
-        //     }
-        // }
+        if(dataPacket[0] == 1){
+          Serial.println("Z-Translate ");
+          getIk(0, points[dataPacket[1]][0], points[dataPacket[1]][1], 1 );
+          getIk(0, points[dataPacket[1]][0], points[dataPacket[1]][1], 2 );
+          getIk(0, points[dataPacket[1]][0], points[dataPacket[1]][1], 3 );
+          getIk(0, points[dataPacket[1]][0], points[dataPacket[1]][1], 4 );
+        }
+        else if (dataPacket[0] == 2) {
+          Serial.println("Z-Rotate");
+          getIk(map(dataPacket[1], 0, 30, -30, 30), 40, dataPacket[2], 1 );
+          getIk(map(dataPacket[1], 0, 30, -30, 30), 40, dataPacket[2], 2 );
+          getIk(map(dataPacket[1], 0, 30, -30, 30), 40, dataPacket[2], 3 );
+          getIk(map(dataPacket[1], 0, 30, -30, 30), 40, dataPacket[2], 4 );
+        }
       }
     }
   }

@@ -142,7 +142,7 @@ void getIk( int x, int y, int z, int leg) {
 
 
 int globalX = 0;
-int globalY = 40;
+int globalY = 60;
 int globalZ = 40;
 
 void setup() {
@@ -150,16 +150,10 @@ void setup() {
   pwm.begin();
   pwm.setPWMFreq(60);
 
-  for (int i = 0; i < 5; i++) {
-    frontUp(1);
-    delay(110);
-    frontDown(1);
-    delay(110);
-    backDown(1);
-    delay(110);
-    backUp(1);
-    delay(110);
-  }
+  getIk(globalX, globalY, globalZ, 1);
+  getIk(globalX, globalY, globalZ, 2);
+  getIk(globalX, globalY, globalZ, 3);
+  getIk(globalX, globalY, globalZ, 4);
 
 }
 
@@ -174,7 +168,7 @@ void loop() {
   while (Serial.available()) {
     String incoming = Serial.readStringUntil('\n');
     if (incoming == "+") {
-      globalX += 10;
+      globalX += 5;
       getIk(globalX, globalY, globalZ, 1);
       getIk(globalX, globalY, globalZ, 2);
       getIk(globalX, globalY, globalZ, 3);
@@ -183,7 +177,7 @@ void loop() {
     }
 
     else if (incoming == "++") {
-      globalY += 10;
+      globalY += 5;
 
       getIk(globalX, globalY, globalZ, 1);
       getIk(globalX, globalY, globalZ, 2);
@@ -193,7 +187,7 @@ void loop() {
     }
 
     else if (incoming == "+++") {
-      globalZ += 10;
+      globalZ += 5;
       getIk(globalX, globalY, globalZ, 1);
       getIk(globalX, globalY, globalZ, 2);
       getIk(globalX, globalY, globalZ, 3);
@@ -202,7 +196,7 @@ void loop() {
     }
 
     else if (incoming == "-") {
-      globalX -= 10;
+      globalX -= 5;
       getIk(globalX, globalY, globalZ, 1);
       getIk(globalX, globalY, globalZ, 2);
       getIk(globalX, globalY, globalZ, 3);
@@ -210,7 +204,7 @@ void loop() {
     }
 
     else if (incoming == "--") {
-      globalY -= 10;
+      globalY -= 5;
       getIk(globalX, globalY, globalZ, 1);
       getIk(globalX, globalY, globalZ, 2);
       getIk(globalX, globalY, globalZ, 3);
@@ -218,7 +212,7 @@ void loop() {
     }
 
     else if (incoming == "---") {
-      globalZ -= 10;
+      globalZ -= 5;
 
       getIk(globalX, globalY, globalZ, 1);
       getIk(globalX, globalY, globalZ, 2);

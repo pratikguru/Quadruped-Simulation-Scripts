@@ -27,6 +27,7 @@ class PS4Controller(object):
         self.controller.init()
         self.HOST = '192.168.0.248'
         self.PORT = 80
+        self.bounceMode = False
 
 
 
@@ -77,16 +78,49 @@ class PS4Controller(object):
                 pprint.pprint(self.button_data)
                 pprint.pprint(self.axis_data)
                 pprint.pprint(self.hat_data)
+                
+                if self.button_data[11]:
+                    print("Toggling Bounce Mode")
+                    self.bounceMode = not self.bounceMode
+                    print("Bounce Mode: " + str(self.bounceMode))
+                    self.sendLoad(bytearray([1, self.bounceMode]))
+                
+                """
+                    In Rotation Mode around Z:
+                        X can go max to 30 and min to -30. 
+                        Y has to be stagnant. 
+                        Z can go max to 80 and min to 40.
+                """
+
+                if self.button_data[2]:
+                  print("Rotation Mode")
+                  axis_data_1_z: int = 0
+                  try:
+                    axis_data_1_z = self.axis_data[0]
+                    axis_data_1_z = (self._map(axis_data_1_z, -1, 1, 0, 30))
+
+                    axis_data_2_z = self.axis_data[1]
+                    axis_data_2_z = (self._map(axis_data_2_z, -1, 1, 40, 80))
+                    print(axis_data_1_z, axis_data_2_z)
+                  except KeyError as e:
+                      axis_data_1_z = 0
+                      print ("Roll Sticks!")
+                  print("Sending Absolute Order")
+
+                  self.sendLoad(bytearray([2, (axis_data_1_z), (axis_data_2_z)]))
 
                 if self.button_data[3]:
-                    axis_data_1_x: int = 0
+                    print("Translate Z Mode")
+                    axis_data_1_x: int = 0                    
                     try:
                         axis_data_1_x = self.axis_data[1]
-                        axis_data_1_x = (self._map(axis_data_1_x, -1, 1, 0, 20))
+                        axis_data_1_x = (self._map(axis_data_1_x, -1, 1, 0, 50))
+                        print(axis_data_1_x)
                     except KeyError as e:
                         axis_data_1_x = 0
                         print ("Roll Sticks!")
-                    self.sendLoad(bytearray([(axis_data_1_x)]))
+                    print("Sending Absolute Order")
+                    self.sendLoad(bytearray([1, axis_data_1_x]))
 
                 if self.button_data[0]: #Holding X
                   print("Holding X")
@@ -111,17 +145,7 @@ class PS4Controller(object):
                     self.sendLoad(bytearray([4]))
                     
                  
-                            
-                
-                if self.button_data[2]: #Holding Z
-                  print("Holding Z")
-                  if self.hat_data[0][1] == 1:
-                    self.sendLoad(bytearray([5]))
-                    
-                  if self.hat_data[0][1] == -1:
-                    self.sendLoad(bytearray([6]))
-                    
-        
+                      
 
                 if self.button_data[9]:
                   print ("Starting Animation")
@@ -146,10 +170,6 @@ class PS4Controller(object):
                   mode != mode
                   self.axisMode = mode
                   print("Axis Mode: " + str(self.axisMode))
-
-                if self.button_data[11]:
-                  print("Resetting legs")
-                  self.sendLoad(bytearray([13]))
 
                 if self.button_data[12]:
                     print("Goodbye!")
