@@ -144,12 +144,12 @@ class PS4Controller(object):
                   self.currentZ2 = data_points[point][1]
 
                   self.currentX3 = pointX
-                  self.currentY3 = data_points[point - pointZ][0]
-                  self.currentZ3 = data_points[point - pointZ][1]
+                  self.currentY3 = data_points[200 - pointZ][0]
+                  self.currentZ3 = data_points[200 - pointZ][1]
 
                   self.currentX4 = pointX
-                  self.currentY4 = data_points[point - pointZ][0]
-                  self.currentZ4 = data_points[point - pointZ][1]
+                  self.currentY4 = data_points[200 - pointZ][0]
+                  self.currentZ4 = data_points[200 - pointZ][1]
 
 
                 if self.button_data[5]:
