@@ -140,7 +140,6 @@ void getIk( int x, int y, int z, int leg) {
   Serial.println(String(x) + " " + String(y) +  " " + String(z) + " " + String((theta_1)) + " " + String((theta_2)) + " " + String((theta_3)));
 }
 
-
 int globalX = 0;
 int globalY = 60;
 int globalZ = 40;
@@ -155,13 +154,26 @@ void setup() {
   getIk(globalX, globalY, globalZ, 3);
   getIk(globalX, globalY, globalZ, 4);
 
+  delay(2000);
+
+  getIk(40, 10, 40, 1);
+  getIk(40, 10, 40, 2);
+  getIk(40, 10, 40, 3);
+  getIk(40, 10, 40, 4);
+
+  delay(1000);
+
+  getIk(40, 155, 85, 1);
+  getIk(40, 155, 85, 2);
+  getIk(40, 155, 85, 3);
+  getIk(40, 155, 85, 4);
+  
+
 }
 
 void loop() {
 
   while (!Serial.available()) {
-
-
 
   }
 
@@ -173,17 +185,14 @@ void loop() {
       getIk(globalX, globalY, globalZ, 2);
       getIk(globalX, globalY, globalZ, 3);
       getIk(globalX, globalY, globalZ, 4);
-
     }
 
     else if (incoming == "++") {
       globalY += 5;
-
       getIk(globalX, globalY, globalZ, 1);
       getIk(globalX, globalY, globalZ, 2);
       getIk(globalX, globalY, globalZ, 3);
       getIk(globalX, globalY, globalZ, 4);
-
     }
 
     else if (incoming == "+++") {
@@ -192,7 +201,6 @@ void loop() {
       getIk(globalX, globalY, globalZ, 2);
       getIk(globalX, globalY, globalZ, 3);
       getIk(globalX, globalY, globalZ, 4);
-
     }
 
     else if (incoming == "-") {
@@ -213,15 +221,12 @@ void loop() {
 
     else if (incoming == "---") {
       globalZ -= 5;
-
       getIk(globalX, globalY, globalZ, 1);
       getIk(globalX, globalY, globalZ, 2);
       getIk(globalX, globalY, globalZ, 3);
       getIk(globalX, globalY, globalZ, 4);
     }
-
   }
-
 }
 
 int angleToPulse(int ang) {

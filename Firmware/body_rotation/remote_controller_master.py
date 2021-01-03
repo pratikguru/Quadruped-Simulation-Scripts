@@ -28,6 +28,21 @@ class PS4Controller(object):
         self.HOST = '192.168.0.248'
         self.PORT = 80
         self.bounceMode = False
+        self.currentX1 = 0
+        self.currentY1 = 0
+        self.currentZ1 = 0
+
+        self.currentX2 = 0
+        self.currentY2 = 0
+        self.currentZ2 = 0
+
+        self.currentX3 = 0
+        self.currentY3 = 0
+        self.currentZ3 = 0
+
+        self.currentX4 = 0
+        self.currentY4 = 0
+        self.currentZ4 = 0
 
 
 
@@ -106,36 +121,65 @@ class PS4Controller(object):
                     axis_data_2_z = self.axis_data[1]
                     axis_data_2_z = (self._map(axis_data_2_z, -1, 1, 40, 100))
                     print(axis_data_1_z, axis_data_2_z)
+
                   except KeyError as e:
                       axis_data_1_z = 0
                       print ("Roll Sticks!")
                   print("Sending Absolute Order")
-
                   self.sendLoad(bytearray([2, (axis_data_1_z), (axis_data_2_z)]))
 
-                if self.button_data[3]:
+                if self.button_data[4]:
+                  print("Rotation Mode")
+                  data_points = list(self.getEquidistantPoints((10, 65), (155, 95), 200 ))  
+                  point = self._map(self.axis_data[5],-1, 1, 0, 200  )
+                  pointX = self._map(self.axis_data[2], -1,1, 0, 40)
+                  pointZ = self._map(self.axis_data[1], -1, 1, 0, 200)
+
+                  self.currentX1 = pointX
+                  self.currentY1 = data_points[point ][0]
+                  self.currentZ1 = data_points[point ][1]
+
+                  self.currentX2 = pointX
+                  self.currentY2 = data_points[point][0]
+                  self.currentZ2 = data_points[point][1]
+
+                  self.currentX3 = pointX
+                  self.currentY3 = data_points[point - pointZ][0]
+                  self.currentZ3 = data_points[point - pointZ][1]
+
+                  self.currentX4 = pointX
+                  self.currentY4 = data_points[point - pointZ][0]
+                  self.currentZ4 = data_points[point - pointZ][1]
+
+
+                if self.button_data[5]:
                     print("Translate Z Mode")
-                    axis_data_1_x: int = 0                    
-                    axis_data_2_x: int = 0
-                    axis_data_3_x: int = 0
-                    try:
-                        axis_data_1_x = self.axis_data[1]
-                        axis_data_1_x = (self._map(axis_data_1_x, -1, 1, 0, 20))
 
-                        axis_data_2_x = self.axis_data[2]
-                        axis_data_2_x = (self._map(axis_data_2_x, -1, 1, 0, 20))
+                    data_points = list(self.getEquidistantPoints((10, 65), (155, 95), 200 ))
+                    
+                    point = self._map(self.axis_data[5],-1, 1, 0, 200  )
+                    
 
-                        axis_data_3_x = self.axis_data[5]
-                        axis_data_3_x = (self._map(axis_data_3_x, -1, 1, 0, 50))
-                    except KeyError as e:
-                        axis_data_1_x = 0
-                        axis_data_2_X = 0
-                        axis_data_3_X = 0
-                        print ("Roll Sticks!")
-                    print("Sending Absolute Order")
+                    pointX = self._map(self.axis_data[0], -1,1, 0, 40)
 
-                    self.sendLoad(bytearray([1, axis_data_1_x, axis_data_2_x, axis_data_3_x]))
+                    pointY = self._map(self.axis_data[1], -1, 1, 0, 40)
+                    self.currentX1 = 40 - pointX
+                    self.currentY1 = data_points[point][0]
+                    self.currentZ1 = data_points[point][1]
 
+                    self.currentX2 = pointX
+                    self.currentY2 = data_points[point][0]
+                    self.currentZ2 = data_points[point][1]
+
+                    self.currentX3 = pointX
+                    self.currentY3 = data_points[point][0]
+                    self.currentZ3 = data_points[point][1]
+
+                    self.currentX4 = 40 - pointX
+                    self.currentY4 = data_points[point][0]
+                    self.currentZ4 = data_points[point][1]
+                    
+                    
                 if self.button_data[0]: #Holding X
                   print("Holding X")
                   if self.hat_data[0][1] == 1:
@@ -158,9 +202,7 @@ class PS4Controller(object):
                   if self.hat_data[0][1] == -1:
                     self.sendLoad(bytearray([4]))
                     
-                 
-                      
-
+          
                 if self.button_data[9]:
                   print ("Starting Animation")
                   data = self.getEquidistantPoints( (50, 40), (140, 90), 20 )
@@ -172,17 +214,19 @@ class PS4Controller(object):
                   self.sendLoad(bytearray([11]))
 
                 
-                if self.button_data[5]:
-                  print ("Decrementing Speed")
-                  data = self.getEquidistantPoints( (50, 40), (140, 90), 20 )
-                  self.sendLoad(bytearray([12]))
-
+                
             
 
                 if self.button_data[12]:
                     print("Goodbye!")
                     exit(0)
 
+                self.sendLoad((bytearray(
+                  [1, 
+                  int(self.currentX1), int(self.currentX2), int(self.currentX3), int(self.currentX4),
+                  int(self.currentY1), int(self.currentY2), int(self.currentY3), int(self.currentY4),
+                  int(self.currentZ1), int(self.currentZ2), int(self.currentZ3), int(self.currentZ4)
+                  ])))
 
 
 if __name__ == "__main__":

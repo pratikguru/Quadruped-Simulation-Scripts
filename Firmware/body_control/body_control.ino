@@ -1,6 +1,6 @@
 #include <Adafruit_PWMServoDriver.h>
 #include <WiFi.h>
-#include "./helper.h"
+
 
 #define SERVOMIN  100 // this is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX  600 // this is the 'maximum' pulse length count (out of 4096)
@@ -309,10 +309,10 @@ void loop() {
 
         if(dataPacket[0] == 1){
           Serial.println("Z-Translate ");
-          getIk(0, points[dataPacket[1]][0], points[dataPacket[1]][1], 1 );
-          getIk(0, points[dataPacket[1]][0], points[dataPacket[1]][1], 2 );
-          getIk(0, points[dataPacket[1]][0], points[dataPacket[1]][1], 3 );
-          getIk(0, points[dataPacket[1]][0], points[dataPacket[1]][1], 4 );
+          getIk( map(dataPacket[1], 0, 40, -40, 40), dataPacket[5], dataPacket[9], 1 );
+          getIk( map(dataPacket[2], 0, 40, -40, 40), dataPacket[6], dataPacket[10], 2 );
+          getIk( map(dataPacket[3], 0, 40, -40, 40), dataPacket[7], dataPacket[11], 3 );
+          getIk( map(dataPacket[4], 0, 40, -40, 40), dataPacket[8], dataPacket[12], 4 );
         }
         else if (dataPacket[0] == 2) {
           Serial.println("Z-Rotate");
