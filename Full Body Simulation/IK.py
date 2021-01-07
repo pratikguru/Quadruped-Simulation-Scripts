@@ -270,7 +270,7 @@ def plotFrame( theta_1, theta_2, theta_3, pltObj, trace, radius, coxa, tibia, fe
     )
   else:
   
-    pltObj.cla() 
+    pltObj.cla()
     pltObj.plot(
       [radius, radius, -radius, -radius, radius],
       [radius, -radius, -radius, radius, radius], 

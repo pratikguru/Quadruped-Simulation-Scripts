@@ -44,6 +44,7 @@ class PS4Controller(object):
         self.currentY4 = 0
         self.currentZ4 = 0
 
+        self.absoluteControl = False
 
 
 
@@ -213,20 +214,60 @@ class PS4Controller(object):
                   data = self.getEquidistantPoints( (50, 40), (140, 90), 20 )
                   self.sendLoad(bytearray([11]))
 
-                
-                
-            
-
                 if self.button_data[12]:
                     print("Goodbye!")
                     exit(0)
 
-                self.sendLoad((bytearray(
-                  [1, 
-                  int(self.currentX1), int(self.currentX2), int(self.currentX3), int(self.currentX4),
-                  int(self.currentY1), int(self.currentY2), int(self.currentY3), int(self.currentY4),
-                  int(self.currentZ1), int(self.currentZ2), int(self.currentZ3), int(self.currentZ4)
-                  ])))
+                if self.button_data[13]:
+                  print("Marching")
+                  
+                  data_points = list(self.getEquidistantPoints((10, 65), (155, 95), 200 ))
+
+                  limitedPoints = []
+                  limitedPoints = data_points[10:100]
+                  
+                  
+                  toggle = 1
+                  for x in range((10)):
+                    
+                    toggle = not toggle 
+                    self.currentX1 = 20
+                    self.currentY1 = 65 if toggle else 60
+                    self.currentZ1 = 40 
+
+                    self.currentX2 = 20
+                    self.currentY2 = 65 if toggle else 60
+                    self.currentZ2 = 40
+                    
+                    self.currentX3 = 20
+                    self.currentY3 = 60 if toggle else 65
+                    self.currentZ3 = 40
+
+                    self.currentX4 = 20 
+                    self.currentY4 = 60 if toggle else 65
+                    self.currentZ4 = 40
+
+                    self.sendLoad((bytearray(
+                      [1, 
+                      int(self.currentX1), int(self.currentX2), int(self.currentX3), int(self.currentX4),
+                      int(self.currentY1), int(self.currentY2), int(self.currentY3), int(self.currentY4),
+                      int(self.currentZ1), int(self.currentZ2), int(self.currentZ3), int(self.currentZ4)
+                      ])))
+                    
+                    time.sleep(0.1)
+                    
+
+
+
+
+                if not self.absoluteControl:
+                  self.sendLoad((bytearray(
+                    [1, 
+                    int(self.currentX1), int(self.currentX2), int(self.currentX3), int(self.currentX4),
+                    int(self.currentY1), int(self.currentY2), int(self.currentY3), int(self.currentY4),
+                    int(self.currentZ1), int(self.currentZ2), int(self.currentZ3), int(self.currentZ4)
+                    ])))
+                
 
 
 if __name__ == "__main__":

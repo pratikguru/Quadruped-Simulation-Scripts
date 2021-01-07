@@ -6,7 +6,7 @@ import glob
 import time
 import random
 import numpy as np
-import serial
+
 
 from IK import *
 
@@ -35,10 +35,7 @@ class App(QMainWindow):
         except Exception as e:
             print (e)
             print ("main.ui could not be found!")
-        self.serialObj = serial.Serial()
-        self.serialObj.timeout = 4
-        self.serialObj.port = "/dev/cu.usbmodem14101"
-        #self.serialObj.open()
+    
         
 
         self.radius      = 20
@@ -464,7 +461,7 @@ class App(QMainWindow):
           rotatedPoints_1[1] - self.translateY,
           rotatedPoints_1[2] + self.translateZ
       ))
-
+      print(points_1)
       points_2 = (
         getIKPoint( 
           rotatedPoints_2[0] + self.translateX,
