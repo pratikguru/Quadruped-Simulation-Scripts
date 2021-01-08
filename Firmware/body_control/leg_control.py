@@ -12,7 +12,6 @@ import math
 
 class PS4Controller(object):
     """Class representing the PS4 controller. Pretty straightforward functionality."""
-
     controller = None
     axis_data = None
     button_data = None
@@ -378,8 +377,11 @@ class PS4Controller(object):
 
                 print(self.currentX1, self.currentY1, self.currentZ1)
 
+                if self.button_data[6]:
+                    print("Forward")
+
                 if self.hat_data[0][1] == 1:
-                    stepInterval = 0.2
+                    stepInterval = 0.1
                     self.down(1)
                     self.down(2)
                     self.down(3)
@@ -433,9 +435,10 @@ class PS4Controller(object):
                     self.down(2)
                     self.down(3)
                     self.down(4)
+                    self.reload()
 
                 if self.hat_data[0][1] == -1:
-                    stepInterval = 0.2
+                    stepInterval = 0.1
                     print("Right")
                     self.down(1)
                     self.down(2)
@@ -490,6 +493,7 @@ class PS4Controller(object):
                     self.down(2)
                     self.down(3)
                     self.down(4)
+                    self.reload()
 
                 if self.hat_data[0][0] == -1:
                     baseY = 45
