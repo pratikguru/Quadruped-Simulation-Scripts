@@ -117,6 +117,24 @@ class PS4Controller(object):
             s.sendall(load)
             s.close()
 
+    def upControlled(self, leg, angle):
+        if leg == 1:
+            self.currentX1 = angle
+            self.currentY1 = 60
+            self.currentZ1 = 40
+        elif leg == 2:
+            self.currentX2 = angle
+            self.currentY2 = 60
+            self.currentZ2 = 40
+        elif leg == 3:
+            self.currentX3 = angle
+            self.currentY3 = 60
+            self.currentZ3 = 40
+        elif leg == 4:
+            self.currentX4 = angle
+            self.currentY4 = 60
+            self.currentZ4 = 40
+
     def up(self, leg):
         if leg == 1:
             self.currentX1 = 20
@@ -138,20 +156,20 @@ class PS4Controller(object):
     def down(self, leg):
         if leg == 1:
             self.currentX1 = 20
-            self.currentY1 = 50
-            self.currentZ1 = 60
+            self.currentY1 = 60
+            self.currentZ1 = 75
         elif leg == 2:
             self.currentX2 = 20
-            self.currentY2 = 50
-            self.currentZ2 = 60
+            self.currentY2 = 60
+            self.currentZ2 = 75
         elif leg == 3:
             self.currentX3 = 20
-            self.currentY3 = 50
-            self.currentZ3 = 60
+            self.currentY3 = 60
+            self.currentZ3 = 75
         elif leg == 4:
             self.currentX4 = 20
-            self.currentY4 = 50
-            self.currentZ4 = 60
+            self.currentY4 = 60
+            self.currentZ4 = 75
 
     def upFront(self, leg):
         if leg == 1:
@@ -225,6 +243,78 @@ class PS4Controller(object):
             self.currentY4 = 20
             self.currentZ4 = 60
 
+    def stanceUp(self, leg):
+        if leg == 1:
+            self.currentX1 = 10
+            self.currentY1 = 60
+            self.currentZ1 = 40
+        elif leg == 2:
+            self.currentX2 = 30
+            self.currentY2 = 60
+            self.currentZ2 = 40
+        elif leg == 3:
+            self.currentX3 = 10
+            self.currentY3 = 60
+            self.currentZ3 = 40
+        elif leg == 4:
+            self.currentX4 = 30
+            self.currentY4 = 60
+            self.currentZ4 = 40
+
+    def stanceDown(self, leg, increment):
+        if leg == 1:
+            self.currentX1 = 10
+            self.currentY1 = 45 + increment
+            self.currentZ1 = 60 + increment
+        elif leg == 2:
+            self.currentX2 = 30
+            self.currentY2 = 45 + increment
+            self.currentZ2 = 60 + increment
+        elif leg == 3:
+            self.currentX3 = 10
+            self.currentY3 = 45 + increment
+            self.currentZ3 = 40 + increment
+        elif leg == 4:
+            self.currentX4 = 30
+            self.currentY4 = 45 + increment
+            self.currentZ4 = 60 + increment
+
+    def stanceDownSide(self, leg, increment, rotation):
+        if leg == 1:
+            self.currentX1 = 10 + rotation
+            self.currentY1 = 45 + increment
+            self.currentZ1 = 60 + increment
+        elif leg == 2:
+            self.currentX2 = 30 - rotation
+            self.currentY2 = 45 + increment
+            self.currentZ2 = 60 + increment
+        elif leg == 3:
+            self.currentX3 = 10 + rotation
+            self.currentY3 = 45 + increment
+            self.currentZ3 = 40 + increment
+        elif leg == 4:
+            self.currentX4 = 30 - rotation
+            self.currentY4 = 45 + increment
+            self.currentZ4 = 60 + increment
+
+    def stanceUpSide(self, leg, rotation):
+        if leg == 1:
+            self.currentX1 = 10 + rotation
+            self.currentY1 = 60
+            self.currentZ1 = 40
+        elif leg == 2:
+            self.currentX2 = 30 - rotation
+            self.currentY2 = 60
+            self.currentZ2 = 40
+        elif leg == 3:
+            self.currentX3 = 10 + rotation
+            self.currentY3 = 60
+            self.currentZ3 = 40
+        elif leg == 4:
+            self.currentX4 = 30 - rotation
+            self.currentY4 = 60
+            self.currentZ4 = 40
+
     def reload(self):
         self.sendLoad((bytearray(
                       [1,
@@ -288,32 +378,201 @@ class PS4Controller(object):
 
                 print(self.currentX1, self.currentY1, self.currentZ1)
 
-                if self.button_data[0]:
-                    print("Square")
-                    rots = self._map(self.axis_data[0], -1, 1, 0, 40)
-                    rotations = (self.handleRotate(0, 0, 0, 20, 45+rots, 60))
-                    self.currentX1 = rotations[0]
-                    self.currentY1 = rotations[1]
-                    self.currentZ1 = rotations[2]
+                if self.hat_data[0][1] == 1:
+                    stepInterval = 0.2
+                    self.down(1)
+                    self.down(2)
+                    self.down(3)
+                    self.down(4)
+                    self.reload()
+                    time.sleep(stepInterval)
 
-                    self.currentX2 = rotations[0]
-                    self.currentY2 = rotations[1]
-                    self.currentZ2 = rotations[2]
+                    self.up(1)
+                    self.up(2)
+                    self.up(3)
+                    self.up(4)
+                    self.reload()
+                    time.sleep(stepInterval)
 
-                    self.currentX3 = rotations[0]
-                    self.currentY3 = (rotations[1])
-                    self.currentZ3 = (rotations[2])
+                    self.upBack(1)
+                    self.upBack(3)
+                    self.down(4)
+                    self.down(2)
+                    self.reload()
+                    time.sleep(stepInterval)
 
-                    self.currentX4 = rotations[0]
-                    self.currentY4 = (rotations[1])
-                    self.currentZ4 = (rotations[2])
+                    self.upBack(1)
+                    self.upBack(3)
+                    self.up(4)
+                    self.up(2)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.downBack(1)
+                    self.downBack(3)
+                    self.down(4)
+                    self.down(2)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.downBack(1)
+                    self.downBack(3)
+                    self.upBack(4)
+                    self.upBack(2)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.downBack(1)
+                    self.downBack(3)
+                    self.downBack(4)
+                    self.downBack(2)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.down(1)
+                    self.down(2)
+                    self.down(3)
+                    self.down(4)
+
+                if self.hat_data[0][1] == -1:
+                    stepInterval = 0.2
+                    print("Right")
+                    self.down(1)
+                    self.down(2)
+                    self.down(3)
+                    self.down(4)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.up(1)
+                    self.up(2)
+                    self.up(3)
+                    self.up(4)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.upFront(1)
+                    self.upFront(3)
+                    self.down(4)
+                    self.down(2)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.upFront(1)
+                    self.upFront(3)
+                    self.up(4)
+                    self.up(2)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.downFront(1)
+                    self.downFront(3)
+                    self.down(4)
+                    self.down(2)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.downFront(1)
+                    self.downFront(3)
+                    self.upFront(4)
+                    self.upFront(2)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.downFront(1)
+                    self.downFront(3)
+                    self.downFront(4)
+                    self.downFront(2)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.down(1)
+                    self.down(2)
+                    self.down(3)
+                    self.down(4)
+
+                if self.hat_data[0][0] == -1:
+                    baseY = 45
+
+                    baseZ = 60
+
+                    stepIncrement = -15
+                    stepInterval = 0.2
+
+                    hipMin = 10
+                    hipMax = 25
+
+                    self.up(1)
+                    self.up(2)
+                    self.up(3)
+                    self.up(4)
+                    self.reload()
+                    time.sleep(stepInterval)
+
+                    self.down(2)
+                    self.down(3)
+                    self.down(4)
+                    self.downBack(1)
+                    self.reload()
+
+                    time.sleep(stepInterval)
+                    self.up(2)
+                    self.up(3)
+                    self.up(4)
+                    self.upBack(1)
+                    self.reload()
+
+                    # set 2
+
+                    time.sleep(stepInterval)
+                    self.down(2)
+                    self.down(4)
+                    self.downBack(3)
+                    self.downBack(1)
+                    self.reload()
+
+                    time.sleep(stepInterval)
+                    self.up(2)
+                    self.up(4)
+                    self.upBack(3)
+                    self.upBack(1)
+                    self.reload()
+
+                    time.sleep(stepInterval)
+                    self.down(2)
+                    self.downBack(4)
+                    self.downBack(3)
+                    self.downBack(1)
+                    self.reload()
+
+                    # set 3
+                    time.sleep(stepInterval)
+                    self.up(2)
+                    self.upBack(4)
+                    self.upBack(3)
+                    self.upBack(1)
+                    self.reload()
+
+                    time.sleep(stepInterval)
+                    self.downBack(2)
+                    self.downBack(4)
+                    self.downBack(3)
+                    self.downBack(1)
+                    self.reload()
+
+                    time.sleep(stepInterval)
+
+                    self.up(1)
+                    self.up(2)
+                    self.up(3)
+                    self.up(4)
                     self.reload()
 
                 if self.button_data[1]:
                     print("Stepping")
 
-                    baseY = 45
-                    baseZ = 60
+                    baseY = 30
+                    baseZ = 45
 
                     stepIncrement = 0
                     stepInterval = 0.2
@@ -340,12 +599,12 @@ class PS4Controller(object):
                     self.currentZ1 = baseZ + stepIncrement
                     self.reload()
 
-                if self.button_data[2]:
+                if self.hat_data[0][0] == 1:
                     print("high stepping")
                     baseY = 45
                     baseZ = 60
 
-                    stepIncrement = 0
+                    stepIncrement = -15
                     stepInterval = 0.2
 
                     hipMin = 10
@@ -474,87 +733,6 @@ class PS4Controller(object):
                         self.reload()
                     except KeyError as e:
                         print("Roll Sticks")
-
-                if self.hat_data[0][0] == -1:
-                    print("Marching")
-                    step_time = 0.2
-                    step_interval = 0.08
-
-                    points = list(self.getEquidistantPoints(
-                        (60, 40), (75, 90), 100))
-                    cursor = self._map(self.axis_data[1], -1, 1, 0, 100)
-                    self.currentX1 = 20
-                    self.currentY1 = points[cursor][0]
-                    self.currentZ1 = points[cursor][1]
-                    self.reload()
-
-                # if self.hat_data[0][1] == 1:
-
-                if self.hat_data[0][0] == 1:
-
-                    points = list(self.getEquidistantPoints(
-                        (20, 40), (60, 40), 10))
-                    cursor = self._map(self.axis_data[1], -1, 1, 10, 30)
-
-                    self.currentX1 = cursor
-                    self.currentY1 = 20
-                    self.currentZ1 = 40
-                    self.reload()
-
-                    # self.down(1)
-                    # self.down(2)
-                    # self.down(3)
-                    # self.down(4)
-                    # self.reload()
-
-                    # time.sleep(step_interval)
-                    # self.up(1)
-                    # self.reload()
-                    # time.sleep(step_time)
-                    # self.upBack(1)
-                    # self.reload()
-                    # time.sleep(step_time)
-                    # self.downBack(1)
-                    # self.reload()
-
-                    # time.sleep(step_interval)
-                    # self.up(3)
-                    # self.reload()
-                    # time.sleep(step_time)
-                    # self.upBack(3)
-                    # self.reload()
-                    # time.sleep(step_time)
-                    # self.downBack(3)
-                    # self.reload()
-
-                    # time.sleep(step_interval)
-                    # self.up(2)
-                    # self.reload()
-                    # time.sleep(step_time)
-                    # self.upBack(2)
-                    # self.reload()
-                    # time.sleep(step_time)
-                    # self.downBack(2)
-                    # self.reload()
-
-                    # time.sleep(step_interval)
-                    # self.up(4)
-                    # self.reload()
-                    # time.sleep(step_time)
-                    # self.upBack(4)
-                    # self.reload()
-                    # time.sleep(step_time)
-                    # self.downBack(4)
-                    # self.reload()
-
-                    # time.sleep(step_interval)
-                    # self.down(1)
-                    # self.down(2)
-                    # self.down(3)
-                    # self.down(4)
-                    # self.reload()
-                    # #self.sendLoad(bytearray([4]))
-                    # continue
 
 
 if __name__ == "__main__":

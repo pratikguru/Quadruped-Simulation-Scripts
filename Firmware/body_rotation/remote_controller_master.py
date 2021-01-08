@@ -77,7 +77,7 @@ class PS4Controller(object):
                 self.hat_data[i] = (0, 0)
 
         while True:
-            for event in pygame.event.get():
+              for event in pygame.event.get():
                 if event.type == pygame.JOYAXISMOTION:
                     self.axis_data[event.axis] = round(event.value,2)
                 elif event.type == pygame.JOYBUTTONDOWN:
@@ -129,6 +129,9 @@ class PS4Controller(object):
                   print("Sending Absolute Order")
                   self.sendLoad(bytearray([2, (axis_data_1_z), (axis_data_2_z)]))
 
+                """
+                  one more method of turning is to walk straing but change the swing angle shorter on one side and long on the other side!!
+                """
                 if self.button_data[4]:
                   print("Rotation Mode")
                   data_points = list(self.getEquidistantPoints((10, 65), (155, 95), 200 ))  
@@ -159,11 +162,9 @@ class PS4Controller(object):
                     data_points = list(self.getEquidistantPoints((10, 65), (155, 95), 200 ))
                     
                     point = self._map(self.axis_data[5],-1, 1, 0, 200  )
-                    
-
                     pointX = self._map(self.axis_data[0], -1,1, 0, 40)
-
                     pointY = self._map(self.axis_data[1], -1, 1, 0, 40)
+                    
                     self.currentX1 = 40 - pointX
                     self.currentY1 = data_points[point][0]
                     self.currentZ1 = data_points[point][1]
@@ -180,19 +181,15 @@ class PS4Controller(object):
                     self.currentY4 = data_points[point][0]
                     self.currentZ4 = data_points[point][1]
                     
-                    
+                 
                 if self.button_data[0]: #Holding X
                   print("Holding X")
                   if self.hat_data[0][1] == 1:
                     self.sendLoad(bytearray([1]))
                     
-                  
                   if self.hat_data[0][1] == -1:
                     self.sendLoad(bytearray([2]))
-                    
-
-                      
-                            
+                                 
                 if self.button_data[1]: #Holding Y
                   print("Holding Y")
                   
@@ -226,7 +223,6 @@ class PS4Controller(object):
                   limitedPoints = []
                   limitedPoints = data_points[10:100]
                   
-                  
                   toggle = 1
                   for x in range((10)):
                     
@@ -256,9 +252,6 @@ class PS4Controller(object):
                     
                     time.sleep(0.1)
                     
-
-
-
 
                 if not self.absoluteControl:
                   self.sendLoad((bytearray(

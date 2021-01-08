@@ -37,15 +37,15 @@ ServoObj leg_1_2(1, 0);
 ServoObj leg_1_3(2, 0);
 
 ServoObj leg_2_1(4, 0);
-ServoObj leg_2_2(5, 0);
+ServoObj leg_2_2(5, 10);
 ServoObj leg_2_3(6, 0);
 
-ServoObj leg_3_1(8, 10);
+ServoObj leg_3_1(8, 15);
 ServoObj leg_3_2(9, 0);
 ServoObj leg_3_3(10, 0);
 
-ServoObj leg_4_1(12, 12);
-ServoObj leg_4_2(13, 12);
+ServoObj leg_4_1(12, 15);
+ServoObj leg_4_2(13, 15);
 ServoObj leg_4_3(15, 0);
 
 ServoObj servos[] = {
@@ -273,18 +273,10 @@ void setup()
   Serial.println("Pose Ready");
 
   delay(1000);
-
-  getIk(0, 75, 95, 1);
-  getIk(0, 75, 95, 2);
-  getIk(0, 75, 95, 3);
-  getIk(0, 75, 95, 4);
-
-  delay(500);
-
-  getIk(globalX, globalY, globalZ, 1);
-  getIk(globalX, globalY, globalZ, 2);
-  getIk(globalX, globalY, globalZ, 3);
-  getIk(globalX, globalY, globalZ, 4);
+  for(int i = 0; i < 12; i++) {
+    pwm.setPWM(servos[i].pin, 0, angleToPulse((90) + servos[i].offset));
+  }
+   
 }
 
 void loop()

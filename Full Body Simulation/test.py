@@ -462,6 +462,7 @@ class App(QMainWindow):
           rotatedPoints_1[2] + self.translateZ
       ))
       print(points_1)
+      
       points_2 = (
         getIKPoint( 
           rotatedPoints_2[0] + self.translateX,

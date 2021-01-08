@@ -20,19 +20,19 @@ struct ServoObj
 };
 
 ServoObj leg_1_1(0, 0);
-ServoObj leg_1_2(1, 0);
+ServoObj leg_1_2(1, 30);
 ServoObj leg_1_3(2, 0);
 
 ServoObj leg_2_1(4, 0);
-ServoObj leg_2_2(5, 0);
+ServoObj leg_2_2(5, 30);
 ServoObj leg_2_3(6, 0);
 
 ServoObj leg_3_1(8, 10);
-ServoObj leg_3_2(9, 0);
+ServoObj leg_3_2(9, 30);
 ServoObj leg_3_3(10, 0);
 
 ServoObj leg_4_1(12, 10);
-ServoObj leg_4_2(13, 12);
+ServoObj leg_4_2(13, 42);
 ServoObj leg_4_3(15, 0);
 
 ServoObj servos[] = {
@@ -218,7 +218,7 @@ void loop()
         {
             globalX += 5;
             
-            //getIk(globalX, globalY, globalZ, 1);
+            getIk(globalX, globalY, globalZ, 1);
             // getIk(globalX, globalY, globalZ, 2);
             // getIk(globalX, globalY, globalZ, 3);
             // getIk(globalX, globalY, globalZ, 4);
@@ -228,7 +228,7 @@ void loop()
         {
             globalY += 5;
             
-            //getIk(globalX, globalY, globalZ, 1);
+            getIk(globalX, globalY, globalZ, 1);
             // getIk(globalX, globalY, globalZ, 2);
             // getIk(globalX, globalY, globalZ, 3);
             // getIk(globalX, globalY, globalZ, 4);
@@ -238,7 +238,7 @@ void loop()
         {
             globalZ += 5;
             
-            //getIk(globalX, globalY, globalZ, 1);
+            getIk(globalX, globalY, globalZ, 1);
             // getIk(globalX, globalY, globalZ, 2);
             // getIk(globalX, globalY, globalZ, 3);
             // getIk(globalX, globalY, globalZ, 4);
@@ -248,7 +248,7 @@ void loop()
         {
             globalX -= 5;
             
-            //getIk(globalX, globalY, globalZ, 1);
+            getIk(globalX, globalY, globalZ, 1);
             // getIk(globalX, globalY, globalZ, 2);
             // getIk(globalX, globalY, globalZ, 3);
             // getIk(globalX, globalY, globalZ, 4);
@@ -258,7 +258,7 @@ void loop()
         {
             globalY -= 5;
            
-            //getIk(globalX, globalY, globalZ, 1);
+            getIk(globalX, globalY, globalZ, 1);
             // getIk(globalX, globalY, globalZ, 2);
             // getIk(globalX, globalY, globalZ, 3);
             // getIk(globalX, globalY, globalZ, 4);
@@ -268,10 +268,10 @@ void loop()
         {
             globalZ -= 5;
             
-            //getIk(globalX, globalY, globalZ, 1);
-            // getIk(globalX, globalY, globalZ, 2);
-            // getIk(globalX, globalY, globalZ, 3);
-            // getIk(globalX, globalY, globalZ, 4);
+             getIk(globalX, globalY, globalZ, 1);
+//             getIk(globalX, globalY, globalZ, 2);
+//             getIk(globalX, globalY, globalZ, 3);
+//             getIk(globalX, globalY, globalZ, 4);
         }
     }
 }
