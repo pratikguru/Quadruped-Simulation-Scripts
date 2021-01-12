@@ -1,6 +1,9 @@
 import math
 import numpy as np
 import socket
+import time
+
+from pprint import pprint
 
 
 class Leg:
@@ -34,6 +37,7 @@ class RobotModel:
         self.leg_4: Leg = Leg(x=20, y=60, z=40, name="leg-4")
 
         self.showOffMode: bool = False
+        self.increment: int = 15
 
     def _map(self, x, in_min, in_max, out_min, out_max) -> int:
         return int((x-in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
@@ -49,6 +53,334 @@ class RobotModel:
             s.close()
         return None
 
+    def reload(self):
+        self.sendLoad(bytearray(
+            [
+                1,
+                int(self.leg_1.x), int(self.leg_2.x), int(
+                    self.leg_3.x), int(self.leg_4.x),
+                int(self.leg_1.y), int(self.leg_2.y), int(
+                    self.leg_3.y), int(self.leg_4.y),
+                int(self.leg_1.z), int(self.leg_2.z), int(
+                    self.leg_3.z), int(self.leg_4.z)
+            ]
+        ))
+
+    def trotTraverse(self, direction):
+        stepInterval: float = 0.08
+        increment: int = 0
+
+        loops: dict = {
+            "cyc-1": {
+                "1": {
+                    "fn": self.down,
+                    "args": increment
+                },
+                "2": {
+                    "fn": self.down,
+                    "args": increment
+                },
+                "3": {
+                    "fn": self.down,
+                    "args": increment
+                },
+                "4": {
+                    "fn": self.down,
+                    "args": increment
+                }
+            },
+            "cyc-2": {
+                "1": {
+                    "fn": self.upFront
+                },
+                "2": {
+                    "fn": self.down,
+                },
+                "3": {
+                    "fn": self.down
+                },
+                "4": {
+                    "fn": self.down
+                }
+            },
+            "cyc-3": {
+                "1": {
+                    "fn": self.downFront
+                },
+                "2": {
+                    "fn": self.down,
+                },
+                "3": {
+                    "fn": self.down
+                },
+                "4": {
+                    "fn": self.down
+                }
+            },
+            "cyc-4": {
+                "1": {
+                    "fn": self.downFront
+                },
+                "2": {
+                    "fn": self.down,
+                },
+                "3": {
+                    "fn": self.upFront
+                },
+                "4": {
+                    "fn": self.down
+                }
+            },
+
+            "cyc-4": {
+                "1": {
+                    "fn": self.downFront
+                },
+                "2": {
+                    "fn": self.down,
+                },
+                "3": {
+                    "fn": self.downBack
+                },
+                "4": {
+                    "fn": self.down
+                }
+            },
+            "cyc-5": {
+                "1": {
+                    "fn": self.downFront
+                },
+                "2": {
+                    "fn": self.upFront,
+                },
+                "3": {
+                    "fn": self.downBack
+                },
+                "4": {
+                    "fn": self.down
+                }
+            },
+            "cyc-6": {
+                "1": {
+                    "fn": self.downFront
+                },
+                "2": {
+                    "fn": self.downFront,
+                },
+                "3": {
+                    "fn": self.downBack
+                },
+                "4": {
+                    "fn": self.down
+                }
+            },
+            "cyc-6": {
+                "1": {
+                    "fn": self.downFront
+                },
+                "2": {
+                    "fn": self.downFront,
+                },
+                "3": {
+                    "fn": self.downBack
+                },
+                "4": {
+                    "fn": self.upBack
+                }
+            },
+            "cyc-6": {
+                "1": {
+                    "fn": self.downFront
+                },
+                "2": {
+                    "fn": self.downFront,
+                },
+                "3": {
+                    "fn": self.downBack
+                },
+                "4": {
+                    "fn": self.downBack
+                }
+            }
+        }
+
+        for key, value in loops.items():
+            for key2, value2 in value.items():
+                for key3, value3 in value2.items():
+                    try:
+                        value3(int(key2))
+                    except TypeError as e:
+                        pass
+            time.sleep(stepInterval)
+            self.reload()
+
+    def trotRotate(self, direction):
+        stepInterval: float = 0.2
+        increment: int = 0
+
+        loops: dict = {
+            "cycle-1": {
+                "1": {
+                    "fn": self.down,
+                    "args": increment
+                },
+                "2": {
+                    "fn": self.down,
+                    "args": increment
+                },
+                "3": {
+                    "fn": self.down,
+                    "args": increment
+                },
+                "4": {
+                    "fn": self.down,
+                    "args": increment
+                }
+            },
+            "cycle-2": {
+                "1": {
+                    "fn": self.upFront if direction else self.upBack
+                },
+                "2": {
+                    "fn": self.down
+                },
+                "3": {
+                    "fn": self.upFront if direction else self.upBack
+                },
+                "4": {
+                    "fn": self.down
+                },
+            },
+            "cycle-3": {
+                "1": {
+                    "fn": self.downFront if direction else self.downBack
+                },
+                "2": {
+                    "fn": self.down
+                },
+                "3": {
+                    "fn": self.downFront if direction else self.downBack
+                },
+                "4": {
+                    "fn": self.down
+                }
+            },
+            "cycle-4": {
+                "1": {
+                    "fn": self.downFront if direction else self.downBack,
+                },
+                "2": {
+                    "fn": self.upFront if direction else self.upBack,
+                },
+                "3": {
+                    "fn": self.downFront if direction else self.downBack
+                },
+                "4": {
+                    "fn": self.upFront if direction else self.upBack
+                }
+            },
+            "cycle-5": {
+                "1": {
+                    "fn": self.downFront if direction else self.downBack,
+                },
+                "2": {
+                    "fn": self.downFront if direction else self.downBack,
+                },
+                "3": {
+                    "fn": self.downFront if direction else self.downBack
+                },
+                "4": {
+                    "fn": self.downFront if direction else self.downBack
+                }
+            },
+            "cycle-6": {
+                "1": {
+                    "fn": self.down,
+                },
+                "2": {
+                    "fn": self.down,
+                },
+                "3": {
+                    "fn": self.down
+                },
+                "4": {
+                    "fn": self.down
+                }
+            }
+        }
+
+        for key, value in loops.items():
+            for key2, value2 in value.items():
+                for key3, value3 in value2.items():
+
+                    try:
+                        value3(int(key2))
+                    except TypeError as e:
+                        pass
+            time.sleep(stepInterval)
+            self.reload()
+
+    def rotate(self, axis_1, axis_2, axis_3, axis) -> None:
+        data_points = self._getTrajectory((10, 65), (155, 95), 200)
+        point_z = self._map(axis_1, - 1, 1, 0, 200)
+        point_x = self._map(axis_2, -1, 1, 0, 40)
+        point_3 = self._map(axis_3, -1, 1, 0, 200)
+
+        if axis == "x":
+            self.leg_1.y = data_points[200 - point_z][0]
+            self.leg_1.z = data_points[200 - point_z][1]
+
+            self.leg_3.y = data_points[point_3][0]
+            self.leg_3.z = data_points[point_3][1]
+
+        elif axis == "y":
+            self.leg_1.y = data_points[point_3][0]
+            self.leg_1.z = data_points[point_3][1]
+
+            self.leg_3.y = data_points[200 - point_z][0]
+            self.leg_3.z = data_points[200 - point_z][1]
+
+        self.leg_1.x = point_x
+
+        self.leg_2.x = point_x
+        self.leg_2.y = data_points[point_3][0]
+        self.leg_2.z = data_points[point_3][1]
+
+        self.leg_3.x = point_x
+
+        self.leg_4.x = point_x
+        self.leg_4.y = data_points[200 - point_z][0]
+        self.leg_4.z = data_points[200 - point_z][1]
+        return None
+
+    def translate(self, axis_1, axis_2, axis_3, axis) -> None:
+        data_points = self._getTrajectory((10, 65), (155, 95), 200)
+        point_1 = self._map(axis_3, -1, 1, 0, 200)
+        point_2 = self._map(axis_1, -1, 1, 0, 40)
+        point_3 = self._map(axis_2, -1, 1, 0, 40)
+
+        if axis == "x":
+            self.leg_1.x = 40 - point_2
+            self.leg_3.x = point_2
+        elif axis == "y":
+            self.leg_1.x = point_2
+            self.leg_3.x = 40 - point_2
+
+        self.leg_1.y = data_points[point_1][0]
+        self.leg_1.z = data_points[point_1][1]
+
+        self.leg_2.x = point_2
+        self.leg_2.y = data_points[point_1][0]
+        self.leg_2.z = data_points[point_1][1]
+
+        self.leg_3.y = data_points[point_1][0]
+        self.leg_3.z = data_points[point_1][1]
+
+        self.leg_4.x = 40 - point_2
+        self.leg_4.y = data_points[point_1][0]
+        self.leg_4.z = data_points[point_1][1]
+        return None
+
     def up(self, leg: int) -> None:
         if leg == 1:
             self.leg_1.move(20, 60, 40)
@@ -58,62 +390,73 @@ class RobotModel:
             self.leg_3.move(20, 60, 40)
         elif leg == 5:
             self.leg_4.move(20, 60, 40)
+        else:
+            print("not")
         return None
 
-    def down(self, leg: int, increment) -> None:
+    def down(self, leg: int, increment=0) -> None:
+
         if leg == 1:
-            self.leg_1.move(20, 45 + increment, 60 + increment)
+            self.leg_1.move(20, 45 + increment, 60 + self.increment)
         elif leg == 2:
-            self.leg_2.move(20, 45 + increment, 60 + increment)
+            self.leg_2.move(20, 45 + increment, 60 + self.increment)
         elif leg == 3:
-            self.leg_3.move(20, 45 + increment, 60 + increment)
+            self.leg_3.move(20, 45 + increment, 60 + self.increment)
         elif leg == 4:
-            self.leg_4.move(20, 45 + increment, 60 + increment)
+            self.leg_4.move(20, 45 + increment, 60 + self.increment)
 
         return None
 
     def upFront(self, leg: int, ) -> None:
+        turn: int = 40
         if leg == 1:
-            self.leg_1.move(40, 20, 40)
+            self.leg_1.move(turn, 20, 40)
         elif leg == 2:
-            self.leg_2.move(40, 20, 40)
+            self.leg_2.move(turn, 20, 40)
         elif leg == 3:
-            self.leg_3.move(40, 20, 40)
+            self.leg_3.move(turn, 20, 40)
         elif leg == 4:
-            self.leg_4.move(40, 20, 40)
+            self.leg_4.move(turn, 20, 40)
         return None
 
     def downFront(self, leg: int) -> None:
+        turn: int = 40
         if leg == 1:
-            self.leg_1.move(40, 20, 60)
+            self.leg_1.move(turn, 20, 60 + self.increment)
         elif leg == 2:
-            self.leg_2.move(40, 20, 60)
+            self.leg_2.move(turn, 20, 60 + self.increment)
         elif leg == 3:
-            self.leg_3.move(40, 20, 60)
+            self.leg_3.move(turn, 20, 60 + self.increment)
         elif leg == 4:
-            self.leg_4.move(40, 20, 60)
+            self.leg_4.move(turn, 20, 60 + self.increment)
         return None
 
     def upBack(self, leg):
+        turn: int = 0
         if leg == 1:
-            self.leg_1.move(self._map(-20, -30, 30, 0, 40), 20, 40)
+            self.leg_1.move(turn, 20, 40)
         elif leg == 2:
-            self.leg_2.move(self._map(-20, -30, 30, 0, 40), 20, 40)
+            self.leg_2.move(turn, 20, 40)
         elif leg == 3:
-            self.leg_3.move(self._map(-20, -30, 30, 0, 40), 20, 40)
+            self.leg_3.move(turn, 20, 40)
         elif leg == 4:
-            self.leg_4.move(self._map(-20, -30, 30, 0, 40), 20, 40)
+            self.leg_4.move(turn, 20, 40)
         return None
 
     def downBack(self, leg):
+        turn: int = 0
         if leg == 1:
-            self.leg_1.move(self._map(-20, -30, 30, 0, 40), 20, 60)
+            self.leg_1.move(turn,
+                            20, 60 + self.increment)
         elif leg == 2:
-            self.leg_2.move(self._map(-20, -30, 30, 0, 40), 20, 60)
+            self.leg_2.move(turn,
+                            20, 60 + self.increment)
         elif leg == 3:
-            self.leg_3.move(self._map(-20, -30, 30, 0, 40), 20, 60)
+            self.leg_3.move(turn,
+                            20, 60 + self.increment)
         elif leg == 4:
-            self.leg_4.move(self._map(-20, -30, 30, 0, 40), 20, 60)
+            self.leg_4.move(turn,
+                            20, 60 + self.increment)
         return None
 
 
@@ -125,3 +468,9 @@ if __name__ == "__main__":
     print(robo.leg_1.show())
     robo.downBack(1)
     print(robo.leg_1.show())
+
+    robo.translate(0, 200, 300)
+    print(robo.leg_1.show())
+    print(robo.leg_2.show())
+    print(robo.leg_3.show())
+    print(robo.leg_4.show())

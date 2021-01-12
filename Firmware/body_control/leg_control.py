@@ -17,7 +17,7 @@ class PS4Controller(object):
     button_data = None
     hat_data = None
 
-    HOST = '192.168.0.248'  # The server's hostname or IP address
+    HOST = '192.168.18.210'  # The server's hostname or IP address
     PORT = 80               # The port used by the server
 
     def init(self):
@@ -28,7 +28,7 @@ class PS4Controller(object):
         self.axisMode = False
         self.controller = pygame.joystick.Joystick(0)
         self.controller.init()
-        self.HOST = '192.168.0.248'
+        self.HOST = '192.168.18.210'
         self.PORT = 80
         self.bounceMode = False
         self.currentX1 = 20

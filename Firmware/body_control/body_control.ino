@@ -11,8 +11,10 @@
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
-const char *ssid = "UPCD736725";
-const char *password = "Y6Zcwbtruurb";
+//const char *ssid = "robotyka_564";
+//const char *password = "shamrock12345";
+const char* ssid     = "UPCD736725";
+const char* password = "Y6Zcwbtruurb";
 IPAddress local_IP(10, 0, 0, 1);
 IPAddress gateway(10, 0, 0, 1);
 IPAddress subnet(255, 255, 0, 0);
