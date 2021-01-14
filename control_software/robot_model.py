@@ -67,34 +67,29 @@ class RobotModel:
         ))
 
     def trotTraverse(self, direction):
-        stepInterval: float = 0.08
-        increment: int = 0
+        stepInterval: float = 0.3
 
         loops: dict = {
-            "cyc-1": {
+            "cycle-1": {
                 "1": {
-                    "fn": self.down,
-                    "args": increment
+                    "fn": self.down
                 },
                 "2": {
-                    "fn": self.down,
-                    "args": increment
+                    "fn": self.down
                 },
                 "3": {
-                    "fn": self.down,
-                    "args": increment
+                    "fn": self.down
                 },
                 "4": {
-                    "fn": self.down,
-                    "args": increment
-                }
+                    "fn": self.down
+                },
             },
-            "cyc-2": {
+            "cycle-2": {
                 "1": {
-                    "fn": self.upFront
+                    "fn": self.up
                 },
                 "2": {
-                    "fn": self.down,
+                    "fn": self.down
                 },
                 "3": {
                     "fn": self.down
@@ -103,12 +98,47 @@ class RobotModel:
                     "fn": self.down
                 }
             },
-            "cyc-3": {
+            "cycle-3": {
                 "1": {
-                    "fn": self.downFront
+                    "fn": self.shortDownFront
+                }
+            },
+            "cycle-4": {
+                "3": {
+                    "fn": self.up
+                }
+            },
+            "cycle-5": {
+                "3": {
+                    "fn": self.shortDownBack
+                }
+            },
+            "cycle-6": {
+                "2": {
+                    "fn": self.up
+                }
+            },
+            "cycle-7": {
+                "2": {
+                    "fn": self.shortDownFront
+                }
+            },
+            "cycle-8": {
+                "4": {
+                    "fn": self.up
+                }
+            },
+            "cycle-9": {
+                "4": {
+                    "fn": self.shortDownBack
+                }
+            },
+            "cycle-10": {
+                "1": {
+                    "fn": self.down
                 },
                 "2": {
-                    "fn": self.down,
+                    "fn": self.down
                 },
                 "3": {
                     "fn": self.down
@@ -116,90 +146,77 @@ class RobotModel:
                 "4": {
                     "fn": self.down
                 }
-            },
-            "cyc-4": {
-                "1": {
-                    "fn": self.downFront
-                },
-                "2": {
-                    "fn": self.down,
-                },
-                "3": {
-                    "fn": self.upFront
-                },
-                "4": {
-                    "fn": self.down
-                }
-            },
+            }
 
-            "cyc-4": {
+        }
+
+        loops: dict = {
+            "cycle-1": {
                 "1": {
-                    "fn": self.downFront
+                    "fn": self.down
                 },
                 "2": {
-                    "fn": self.down,
+                    "fn": self.down
                 },
                 "3": {
-                    "fn": self.downBack
+                    "fn": self.down
                 },
                 "4": {
                     "fn": self.down
                 }
             },
-            "cyc-5": {
+            "cycle-2": {
                 "1": {
-                    "fn": self.downFront
+                    "fn": self.up
                 },
                 "2": {
-                    "fn": self.upFront,
+                    "fn": self.down
                 },
                 "3": {
-                    "fn": self.downBack
+                    "fn": self.up
                 },
                 "4": {
                     "fn": self.down
                 }
             },
-            "cyc-6": {
+            "cycle-3": {
                 "1": {
-                    "fn": self.downFront
+                    "fn": self.shortDownFront if direction else self.shortDownBack
+                },
+
+                "3": {
+                    "fn": self.shortDownBack if direction else self.shortDownFront
+                },
+
+            },
+            "cycle-4": {
+                "2": {
+                    "fn": self.up
+                },
+                "4": {
+                    "fn": self.up
+                }
+            },
+            "cycle-5": {
+                "2": {
+                    "fn": self.shortDownFront if direction else self.shortDownBack
+                },
+                "4": {
+                    "fn": self.shortDownBack if direction else self.shortDownFront
+                }
+            },
+            "cycle-6": {
+                "1": {
+                    "fn": self.down
                 },
                 "2": {
-                    "fn": self.downFront,
+                    "fn": self.down
                 },
                 "3": {
-                    "fn": self.downBack
+                    "fn": self.down
                 },
                 "4": {
                     "fn": self.down
-                }
-            },
-            "cyc-6": {
-                "1": {
-                    "fn": self.downFront
-                },
-                "2": {
-                    "fn": self.downFront,
-                },
-                "3": {
-                    "fn": self.downBack
-                },
-                "4": {
-                    "fn": self.upBack
-                }
-            },
-            "cyc-6": {
-                "1": {
-                    "fn": self.downFront
-                },
-                "2": {
-                    "fn": self.downFront,
-                },
-                "3": {
-                    "fn": self.downBack
-                },
-                "4": {
-                    "fn": self.downBack
                 }
             }
         }
@@ -208,14 +225,15 @@ class RobotModel:
             for key2, value2 in value.items():
                 for key3, value3 in value2.items():
                     try:
+                        print(value3)
                         value3(int(key2))
-                    except TypeError as e:
+                    except TypeError:
                         pass
             time.sleep(stepInterval)
             self.reload()
 
     def trotRotate(self, direction):
-        stepInterval: float = 0.2
+        stepInterval: float = 0.1
         increment: int = 0
 
         loops: dict = {
@@ -315,7 +333,7 @@ class RobotModel:
 
                     try:
                         value3(int(key2))
-                    except TypeError as e:
+                    except TypeError:
                         pass
             time.sleep(stepInterval)
             self.reload()
@@ -357,7 +375,6 @@ class RobotModel:
         data_points = self._getTrajectory((10, 65), (155, 95), 200)
         point_1 = self._map(axis_3, -1, 1, 0, 200)
         point_2 = self._map(axis_1, -1, 1, 0, 40)
-        point_3 = self._map(axis_2, -1, 1, 0, 40)
 
         if axis == "x":
             self.leg_1.x = 40 - point_2
@@ -381,6 +398,20 @@ class RobotModel:
         self.leg_4.z = data_points[point_1][1]
         return None
 
+    def step(self, leg):
+
+        self.up(leg)
+        self.reload()
+        time.sleep(0.2)
+        self.shortDownFront(leg)
+        self.reload()
+        time.sleep(0.2)
+        self.shortDownBack(leg)
+        self.reload()
+        time.sleep(0.2)
+        self.up(leg)
+        self.reload()
+
     def up(self, leg: int) -> None:
         if leg == 1:
             self.leg_1.move(20, 60, 40)
@@ -388,22 +419,21 @@ class RobotModel:
             self.leg_2.move(20, 60, 40)
         elif leg == 3:
             self.leg_3.move(20, 60, 40)
-        elif leg == 5:
+        elif leg == 4:
             self.leg_4.move(20, 60, 40)
-        else:
-            print("not")
+
         return None
 
     def down(self, leg: int, increment=0) -> None:
 
         if leg == 1:
-            self.leg_1.move(20, 45 + increment, 60 + self.increment)
+            self.leg_1.move(20, 45 + self.increment, 60 + self.increment)
         elif leg == 2:
-            self.leg_2.move(20, 45 + increment, 60 + self.increment)
+            self.leg_2.move(20, 45 + self.increment, 60 + self.increment)
         elif leg == 3:
-            self.leg_3.move(20, 45 + increment, 60 + self.increment)
+            self.leg_3.move(20, 45 + self.increment, 60 + self.increment)
         elif leg == 4:
-            self.leg_4.move(20, 45 + increment, 60 + self.increment)
+            self.leg_4.move(20, 45 + self.increment, 60 + self.increment)
 
         return None
 
@@ -458,6 +488,36 @@ class RobotModel:
             self.leg_4.move(turn,
                             20, 60 + self.increment)
         return None
+
+    def shortDownFront(self, leg):
+        turn = 30
+        if leg == 1:
+            self.leg_1.move(turn,
+                            45 + self.increment, 60 + self.increment)
+        elif leg == 2:
+            self.leg_2.move(turn,
+                            45 + self.increment, 60 + self.increment)
+        elif leg == 3:
+            self.leg_3.move(turn,
+                            45 + self.increment, 60 + self.increment)
+        elif leg == 4:
+            self.leg_4.move(turn,
+                            45 + self.increment, 60 + self.increment)
+
+    def shortDownBack(self, leg):
+        turn = 10
+        if leg == 1:
+            self.leg_1.move(turn,
+                            45 + self.increment, 60 + self.increment)
+        elif leg == 2:
+            self.leg_2.move(turn,
+                            45 + self.increment, 60 + self.increment)
+        elif leg == 3:
+            self.leg_3.move(turn,
+                            45 + self.increment, 60 + self.increment)
+        elif leg == 4:
+            self.leg_4.move(turn,
+                            45 + self.increment, 60 + self.increment)
 
 
 if __name__ == "__main__":

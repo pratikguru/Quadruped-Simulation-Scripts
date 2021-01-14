@@ -49,8 +49,14 @@ if __name__ == "__main__":
 
         if inputs["r1"]:
             print("Rotating")
-            # robot.trotRotate(direction=1)
+            robot.trotRotate(direction=1)
+            # robot.trotTraverse(direction=1)
+
+        if inputs["r2"]:
             robot.trotTraverse(direction=1)
+
+        if inputs["l2"]:
+            robot.trotTraverse(direction=0)
 
         if inputs["l1"]:
             print("Rotating")
@@ -63,6 +69,11 @@ if __name__ == "__main__":
         if inputs["o"] == 1 and not inputs["s"] == 1:
             print("Toggling Rotate Mode")
             rotateMode = not rotateMode
+
+        if inputs["x"]:
+            print("testing move")
+
+            robot.step(1)
 
         if rotateMode:
             if inputs["x"] == 1:
