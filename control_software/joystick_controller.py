@@ -6,8 +6,20 @@ import numpy as np
 import copy
 import glob
 import time
-
+import numpy as np
 import math
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+
+"""
+Solution space.
+
+[0, 0, 0, 0, 40, 0, -40, 0,  40, 0, -40, 0],
+[60, 0, 60, 0, 20, 0,  20, 0,  20, 0, 20, 0],
+[40, 0, 75, 0, 40, 0,  40, 0,  75, 0, 75, 0],
+
+
+"""
 
 
 class PS4Controller(object):
@@ -25,7 +37,7 @@ class PS4Controller(object):
         self.axisMode = False
         self.controller = pygame.joystick.Joystick(0)
         self.controller.init()
-
+        self.window_size: int = 100
         self.button_states = {
             0: "s",
             1: "x",
@@ -42,6 +54,18 @@ class PS4Controller(object):
             12: "home",
             13: "pad",
         }
+
+    def _smooth(self, value: float, smooth: int) -> int:
+        sum = 0
+        for x in range(0, smooth):
+            sum += value
+
+        return int(sum/smooth)
+
+    def smoother(self, y, box_pts):
+        box = np.ones(box_pts)/box_pts
+        y_smooth = np.convolve(y, box, mode='same')
+        return y_smooth
 
     def listen(self):
         """Listen for events to happen"""
@@ -95,9 +119,76 @@ class PS4Controller(object):
         return (new_dict)
 
 
+def _map(x, in_min, in_max, out_min, out_max) -> int:
+    return int((x-in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+
+
+def _smooth(value: float, smooth: int) -> int:
+    sum = 0
+    for x in range(0, smooth):
+        sum += _map(value, -1, 1, 0, 500)
+    return int(sum/smooth)
+
+
+def smoother(y, box_pts):
+    box = np.ones(box_pts)/box_pts
+    y_smooth = np.convolve(y, box, mode='same')
+    return y_smooth
+
+
 if __name__ == "__main__":
     ps4 = PS4Controller()
     ps4.init()
+
+    fig = plt.figure("IK")
+    ax = plt.axes([0.05, 0.2, 0.90, 0.75], projection="3d")
+
     while True:
         os.system("clear")
-        pprint.pprint(ps4.listen())
+        # pprint.pprint(ps4.listen())
+
+        inputs = ps4.listen()
+        data: int = 0
+
+        try:
+            ax.set_xlim3d(-50, 50)
+            ax.set_ylim3d(-50, 100)
+            ax.set_zlim3d(0, 100)
+            ax.set_xlabel("X-axis")
+            ax.set_ylabel("Y-axis")
+            ax.set_zlabel("Z-axis")
+            ax.set_axisbelow(True)
+            ax.plot(
+                [0, 0, 0, 0, 40, 0, -40, 0,  40, 0, -40, 0],
+                [60, 0, 60, 0, 20, 0,  20, 0,  20, 0, 20, 0],
+                [40, 0, 75, 0, 40, 0,  40, 0,  75, 0, 75, 0],
+                "o-",
+                markerSize=3,
+                markerFacecolor="orange",
+                linewidth=0.3,
+                color="blue"
+            )
+            x_points = _map(
+                (inputs["left_x"], -1, 1, -40, 40))
+            y_points = _map((inputs["left_y"], -1, 1, 0, 60))
+            z_points = _map((inputs["right_y"], -1, 1, 0, 75))
+            ax.plot(
+                x_points, y_points, z_points,
+                "o-",
+                markerSize=2,
+                markerFacecolor="orange",
+                linewidth=1,
+                color="red"
+            )
+            plt.pause(0.0000000000001)
+        except KeyError as e:
+            print("Roll")
+
+    ax.set_xlim3d(-50, 50)
+    ax.set_ylim3d(-50, 100)
+    ax.set_zlim3d(0, 100)
+    ax.set_xlabel("X-axis")
+    ax.set_ylabel("Y-axis")
+    ax.set_zlabel("Z-axis")
+    ax.set_axisbelow(True)
+    plt.show()

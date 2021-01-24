@@ -1,5 +1,6 @@
 #include <Adafruit_PWMServoDriver.h>
 #include <WiFi.h>
+#include <Wire.h>
 
 #define SERVOMIN 100 // this is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX 600 // this is the 'maximum' pulse length count (out of 4096)
@@ -9,12 +10,21 @@
 #define RUN_ROBOT_ON_SERVER true
 #define STATIC_SERVER_CREDENTIALS false
 
-Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+
+int power_pin = 14;
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40);
+
+
+//yellow - scl - 22
+//red - sda - 21
 
 //const char *ssid = "robotyka_564";
 //const char *password = "shamrock12345";
-const char* ssid     = "UPCD736725";
-const char* password = "Y6Zcwbtruurb";
+char* ssid     = "UPCD736725";
+char* password = "Y6Zcwbtruurb";
+//const char* ssid = "FD-43";
+//const char* password = "";
+
 IPAddress local_IP(10, 0, 0, 1);
 IPAddress gateway(10, 0, 0, 1);
 IPAddress subnet(255, 255, 0, 0);
@@ -36,25 +46,26 @@ struct ServoObj
 
 ServoObj leg_1_1(0, 0);
 ServoObj leg_1_2(1, 0);
-ServoObj leg_1_3(2, 0);
+ServoObj leg_1_3(3, 0);
 
-ServoObj leg_2_1(4, 0);
-ServoObj leg_2_2(5, 10);
+ServoObj leg_2_1(4, 15);
+ServoObj leg_2_2(5, 0);
 ServoObj leg_2_3(6, 0);
 
-ServoObj leg_3_1(8, 15);
+ServoObj leg_3_1(8, 10);
 ServoObj leg_3_2(9, 0);
 ServoObj leg_3_3(10, 0);
 
-ServoObj leg_4_1(12, 15);
-ServoObj leg_4_2(13, 15);
-ServoObj leg_4_3(15, 0);
+ServoObj leg_4_1(12, -10);
+ServoObj leg_4_2(13, 0);
+ServoObj leg_4_3(14, 0);
 
 ServoObj servos[] = {
-    leg_1_1, leg_1_2, leg_1_3,
-    leg_2_1, leg_2_2, leg_2_3,
-    leg_3_1, leg_3_2, leg_3_3,
-    leg_4_1, leg_4_2, leg_4_3};
+  leg_1_1, leg_1_2, leg_1_3,
+  leg_2_1, leg_2_2, leg_2_3,
+  leg_3_1, leg_3_2, leg_3_3,
+  leg_4_1, leg_4_2, leg_4_3
+};
 
 struct Angles
 {
@@ -105,7 +116,7 @@ void up(int leg)
 
 void down(int leg)
 {
-  getIk(0, 50, 45, leg);
+  getIk(0, 45, 60, leg);
 }
 
 void frontUp(int leg)
@@ -140,23 +151,23 @@ Vector rotate(int theta_1, int theta_2, int theta_3, int x, int y, int z)
                x * (cos(theta2) * cos(theta3));
 
   auto row_2 = y *
-                   (cos(theta1) *
-                        cos(theta3) -
-                    sin(theta1) *
-                        sin(theta2) *
-                        sin(theta3)) +
+               (cos(theta1) *
+                cos(theta3) -
+                sin(theta1) *
+                sin(theta2) *
+                sin(theta3)) +
                z *
-                   (cos(theta3) *
-                        sin(theta1) +
-                    cos(theta1) *
-                        sin(theta2) *
-                        sin(theta3)) -
+               (cos(theta3) *
+                sin(theta1) +
+                cos(theta1) *
+                sin(theta2) *
+                sin(theta3)) -
                x *
-                   cos(theta2) *
-                   sin(theta3);
+               cos(theta2) *
+               sin(theta3);
 
   auto row_3 = x *
-                   sin(theta_2) +
+               sin(theta_2) +
                z * cos(theta_1) * cos(theta_2) -
                y * cos(theta_2) * sin(theta_1);
   Vector vector(row_1, row_2, row_3);
@@ -190,34 +201,34 @@ void getIk(int x, int y, int z, int leg)
 
   switch (leg)
   {
-  case 1:
-  {
-    pwm.setPWM(servos[0].pin, 0, angleToPulse((theta_1) + servos[0].offset));
-    pwm.setPWM(servos[1].pin, 0, angleToPulse((theta_2) + servos[1].offset));
-    pwm.setPWM(servos[2].pin, 0, angleToPulse((theta_3) + servos[2].offset));
-    break;
-  }
-  case 2:
-  {
-    pwm.setPWM(servos[3].pin, 0, angleToPulse((theta_1) + servos[3].offset));
-    pwm.setPWM(servos[4].pin, 0, angleToPulse((theta_2) + servos[4].offset));
-    pwm.setPWM(servos[5].pin, 0, angleToPulse((theta_3) + servos[5].offset));
-    break;
-  }
-  case 3:
-  {
-    pwm.setPWM(servos[6].pin, 0, angleToPulse((theta_1) + servos[6].offset));
-    pwm.setPWM(servos[7].pin, 0, angleToPulse((theta_2) + servos[7].offset));
-    pwm.setPWM(servos[8].pin, 0, angleToPulse((theta_3) + servos[8].offset));
-    break;
-  }
-  case 4:
-  {
-    pwm.setPWM(servos[9].pin, 0, angleToPulse((theta_1) + servos[9].offset));
-    pwm.setPWM(servos[10].pin, 0, angleToPulse((theta_2) + servos[10].offset));
-    pwm.setPWM(servos[11].pin, 0, angleToPulse((theta_3) + servos[11].offset));
-    break;
-  }
+    case 1:
+      {
+        pwm.setPWM(servos[0].pin, 0, angleToPulse((theta_1) + servos[0].offset));
+        pwm.setPWM(servos[1].pin, 0, angleToPulse((theta_2) + servos[1].offset));
+        pwm.setPWM(servos[2].pin, 0, angleToPulse((theta_3) + servos[2].offset));
+        break;
+      }
+    case 2:
+      {
+        pwm.setPWM(servos[3].pin, 0, angleToPulse((theta_1) + servos[3].offset));
+        pwm.setPWM(servos[4].pin, 0, angleToPulse((theta_2) + servos[4].offset));
+        pwm.setPWM(servos[5].pin, 0, angleToPulse((theta_3) + servos[5].offset));
+        break;
+      }
+    case 3:
+      {
+        pwm.setPWM(servos[6].pin, 0, angleToPulse((theta_1) + servos[6].offset));
+        pwm.setPWM(servos[7].pin, 0, angleToPulse((theta_2) + servos[7].offset));
+        pwm.setPWM(servos[8].pin, 0, angleToPulse((theta_3) + servos[8].offset));
+        break;
+      }
+    case 4:
+      {
+        pwm.setPWM(servos[9].pin, 0, angleToPulse((theta_1) + servos[9].offset));
+        pwm.setPWM(servos[10].pin, 0, angleToPulse((theta_2) + servos[10].offset));
+        pwm.setPWM(servos[11].pin, 0, angleToPulse((theta_3) + servos[11].offset));
+        break;
+      }
   }
   //Serial.println(String(x) + " " + String(y) +  " " + String(z) + " " + String((theta_1)) + " " + String((theta_2)) + " " + String((theta_3)));
 }
@@ -235,12 +246,56 @@ bool bounceMode = true;
 int maxDataPoints = 50;
 int minDataPoints = 0;
 
+void checkConnection() {
+  byte error, address;
+  int nDevices;
+
+  Serial.println("Scanning...");
+
+  nDevices = 0;
+  for (address = 1; address < 127; address++ )
+  {
+
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+
+    if (error == 0)
+    {
+      Serial.print("I2C device found at address 0x");
+      if (address < 16)
+        Serial.print("0");
+      Serial.print(address, HEX);
+      Serial.println("  !");
+
+      nDevices++;
+    }
+    else if (error == 4)
+    {
+      Serial.print("Unknown error at address 0x");
+      if (address < 16)
+        Serial.print("0");
+      Serial.println(address, HEX);
+    }
+  }
+  if (nDevices == 0)
+    Serial.println("No I2C devices found\n");
+  else
+    Serial.println("done\n");
+  delay(5000);
+}
+
 void setup()
 {
   Serial.begin(115200);
   pwm.begin();
+  
   pwm.setPWMFreq(60);
-
+  yield();
+  
+  
+  
+  pinMode(power_pin, OUTPUT);
+  digitalWrite(power_pin, HIGH);
 #if RUN_ROBOT_ON_SERVER
   Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -273,12 +328,11 @@ void setup()
   getIk(globalX, globalY, globalZ, 4);
 
   Serial.println("Pose Ready");
-
-  delay(1000);
-  for(int i = 0; i < 12; i++) {
-    pwm.setPWM(servos[i].pin, 0, angleToPulse((90) + servos[i].offset));
-  }
-   
+  down(1);
+  down(2);
+  down(3);
+  down(4);
+  
 }
 
 void loop()
@@ -394,7 +448,7 @@ void loop()
           delay(120);
         }
       }
-        }
+    }
   }
 }
 

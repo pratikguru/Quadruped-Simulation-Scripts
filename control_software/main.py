@@ -13,6 +13,11 @@ from robot_model import *
   Process related imports.
 """
 
+
+def _map(x, in_min, in_max, out_min, out_max) -> int:
+    return int((x-in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+
+
 if __name__ == "__main__":
     ps4: PS4Controller = PS4Controller()
     ps4.init()
@@ -24,7 +29,7 @@ if __name__ == "__main__":
     axis: str = "y"
 
     while True:
-        robot: RobotModel = RobotModel("192.168.0.248", 80)
+        robot: RobotModel = RobotModel("192.168.0.248", 80, True)
 
         os.system("clear")
         inputs: dict = (ps4.listen())
@@ -38,6 +43,7 @@ if __name__ == "__main__":
             print("Axis: " + str(axis))
 
         if inputs["option"]:
+
             toggle_debug = not toggle_debug
 
         if toggle_debug:
@@ -70,11 +76,6 @@ if __name__ == "__main__":
             print("Toggling Rotate Mode")
             rotateMode = not rotateMode
 
-        if inputs["x"]:
-            print("testing move")
-
-            robot.step(1)
-
         if rotateMode:
             if inputs["x"] == 1:
                 axis = "x"
@@ -90,6 +91,8 @@ if __name__ == "__main__":
                 robot.reload()
             except KeyError as e:
                 print("Roll Sticks")
+        if inputs["pad"] == True:
+            robot.restart()
 
         if translateMode:
             if inputs["x"] == 1:
@@ -103,8 +106,9 @@ if __name__ == "__main__":
                 print(robot.leg_2.show())
                 print(robot.leg_3.show())
                 print(robot.leg_4.show())
+
                 robot.reload()
             except KeyError as e:
                 print("Roll Sticks")
 
-        time.sleep(0.05)
+        time.sleep(0.01)

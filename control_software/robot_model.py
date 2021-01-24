@@ -24,7 +24,7 @@ class Leg:
 
 
 class RobotModel:
-    def __init__(self, host: int, port: int = 80):
+    def __init__(self, host: int, port: int = 80, activate: bool = False):
 
         # Connecting variables.
         self.host: str = host
@@ -38,6 +38,7 @@ class RobotModel:
 
         self.showOffMode: bool = False
         self.increment: int = 15
+        self.activate: bool = activate
 
     def _map(self, x, in_min, in_max, out_min, out_max) -> int:
         return int((x-in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
@@ -46,12 +47,22 @@ class RobotModel:
         return list(zip(np.linspace(pt1[0], pt2[0], fine+1),
                         np.linspace(pt1[1], pt2[1], fine+1)))
 
+    def _smooth(self, value: float, smooth: int) -> int:
+        return sum([x for x in range(0, smooth)]) / smooth
+
     def sendLoad(self, load: list) -> None:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((self.host, self.port))
-            s.sendall(load)
-            s.close()
-        return None
+        if self.activate:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((self.host, self.port))
+                s.sendall(load)
+                s.close()
+            return None
+        else:
+            return None
+
+    def restart(self):
+        print("Restarting Robot")
+        self.sendLoad(load=bytearray([9]))
 
     def reload(self):
         self.sendLoad(bytearray(
@@ -69,168 +80,9 @@ class RobotModel:
     def trotTraverse(self, direction):
         stepInterval: float = 0.3
 
-        loops: dict = {
-            "cycle-1": {
-                "1": {
-                    "fn": self.down
-                },
-                "2": {
-                    "fn": self.down
-                },
-                "3": {
-                    "fn": self.down
-                },
-                "4": {
-                    "fn": self.down
-                },
-            },
-            "cycle-2": {
-                "1": {
-                    "fn": self.up
-                },
-                "2": {
-                    "fn": self.down
-                },
-                "3": {
-                    "fn": self.down
-                },
-                "4": {
-                    "fn": self.down
-                }
-            },
-            "cycle-3": {
-                "1": {
-                    "fn": self.shortDownFront
-                }
-            },
-            "cycle-4": {
-                "3": {
-                    "fn": self.up
-                }
-            },
-            "cycle-5": {
-                "3": {
-                    "fn": self.shortDownBack
-                }
-            },
-            "cycle-6": {
-                "2": {
-                    "fn": self.up
-                }
-            },
-            "cycle-7": {
-                "2": {
-                    "fn": self.shortDownFront
-                }
-            },
-            "cycle-8": {
-                "4": {
-                    "fn": self.up
-                }
-            },
-            "cycle-9": {
-                "4": {
-                    "fn": self.shortDownBack
-                }
-            },
-            "cycle-10": {
-                "1": {
-                    "fn": self.down
-                },
-                "2": {
-                    "fn": self.down
-                },
-                "3": {
-                    "fn": self.down
-                },
-                "4": {
-                    "fn": self.down
-                }
-            }
-
-        }
-
-        loops: dict = {
-            "cycle-1": {
-                "1": {
-                    "fn": self.down
-                },
-                "2": {
-                    "fn": self.down
-                },
-                "3": {
-                    "fn": self.down
-                },
-                "4": {
-                    "fn": self.down
-                }
-            },
-            "cycle-2": {
-                "1": {
-                    "fn": self.up
-                },
-                "2": {
-                    "fn": self.down
-                },
-                "3": {
-                    "fn": self.up
-                },
-                "4": {
-                    "fn": self.down
-                }
-            },
-            "cycle-3": {
-                "1": {
-                    "fn": self.shortDownFront if direction else self.shortDownBack
-                },
-
-                "3": {
-                    "fn": self.shortDownBack if direction else self.shortDownFront
-                },
-
-            },
-            "cycle-4": {
-                "2": {
-                    "fn": self.up
-                },
-                "4": {
-                    "fn": self.up
-                }
-            },
-            "cycle-5": {
-                "2": {
-                    "fn": self.shortDownFront if direction else self.shortDownBack
-                },
-                "4": {
-                    "fn": self.shortDownBack if direction else self.shortDownFront
-                }
-            },
-            "cycle-6": {
-                "1": {
-                    "fn": self.down
-                },
-                "2": {
-                    "fn": self.down
-                },
-                "3": {
-                    "fn": self.down
-                },
-                "4": {
-                    "fn": self.down
-                }
-            }
-        }
-
-        for key, value in loops.items():
-            for key2, value2 in value.items():
-                for key3, value3 in value2.items():
-                    try:
-                        print(value3)
-                        value3(int(key2))
-                    except TypeError:
-                        pass
-            time.sleep(stepInterval)
-            self.reload()
+        self.downBack(1)
+        self.downBack(3)
+        self.reload()
 
     def trotRotate(self, direction):
         stepInterval: float = 0.1
@@ -338,15 +190,71 @@ class RobotModel:
             time.sleep(stepInterval)
             self.reload()
 
+    def handleRotate(self,
+                     theta_1: int, theta_2: int,
+                     theta_3: int, x: int,
+                     y: int, z: int):
+
+        theta_1 = math.radians(theta_1)
+        theta_2 = math.radians(theta_2)
+        theta_3 = math.radians(theta_3)
+
+        rotationMatrix = np.array([
+            y *
+            (
+                math.cos(theta_1) * math.sin(theta_3) +
+                math.cos(theta_3) * math.sin(theta_1) *
+                math.sin(theta_2)
+            ) +
+            z *
+            (
+                math.sin(theta_1) * math.sin(theta_3) -
+                math.cos(theta_1) * math.cos(theta_3) *
+                math.sin(theta_2)
+            ) +
+            x *
+            math.cos(theta_2) *
+            math.cos(theta_3),
+            # First set of equations.
+            y *
+            (
+                math.cos(theta_1) *
+                math.cos(theta_3) -
+                math.sin(theta_1) *
+                math.sin(theta_2) *
+                math.sin(theta_3)
+            ) +
+            z *
+            (
+                math.cos(theta_3) *
+                math.sin(theta_1) +
+                math.cos(theta_1) *
+                math.sin(theta_2) *
+                math.sin(theta_3)
+            ) -
+            x *
+            math.cos(theta_2) *
+            math.sin(theta_3),
+            # Second set of equations.
+            x *
+            math.sin(theta_2) +
+            z * math.cos(theta_1) * math.cos(theta_2) -
+            y * math.cos(theta_2) * math.sin(theta_1),
+        ])
+        return rotationMatrix
+
     def rotate(self, axis_1, axis_2, axis_3, axis) -> None:
-        data_points = self._getTrajectory((10, 65), (155, 95), 200)
-        point_z = self._map(axis_1, - 1, 1, 0, 200)
-        point_x = self._map(axis_2, -1, 1, 0, 40)
-        point_3 = self._map(axis_3, -1, 1, 0, 200)
+
+        precision: int = 500
+        data_points = self._getTrajectory((10, 65), (155, 95), precision)
+        rotation_precision: int = 40
+        point_z = self._map(axis_1, - 1, 1, 0, precision)
+        point_x = self._map(axis_2, -1, 1, 0, rotation_precision)
+        point_3 = self._map(axis_3, -1, 1, 0, precision)
 
         if axis == "x":
-            self.leg_1.y = data_points[200 - point_z][0]
-            self.leg_1.z = data_points[200 - point_z][1]
+            self.leg_1.y = data_points[precision - point_z][0]
+            self.leg_1.z = data_points[precision - point_z][1]
 
             self.leg_3.y = data_points[point_3][0]
             self.leg_3.z = data_points[point_3][1]
@@ -355,8 +263,8 @@ class RobotModel:
             self.leg_1.y = data_points[point_3][0]
             self.leg_1.z = data_points[point_3][1]
 
-            self.leg_3.y = data_points[200 - point_z][0]
-            self.leg_3.z = data_points[200 - point_z][1]
+            self.leg_3.y = data_points[precision - point_z][0]
+            self.leg_3.z = data_points[precision - point_z][1]
 
         self.leg_1.x = point_x
 
@@ -367,21 +275,27 @@ class RobotModel:
         self.leg_3.x = point_x
 
         self.leg_4.x = point_x
-        self.leg_4.y = data_points[200 - point_z][0]
-        self.leg_4.z = data_points[200 - point_z][1]
+        self.leg_4.y = data_points[precision - point_z][0]
+        self.leg_4.z = data_points[precision - point_z][1]
         return None
 
     def translate(self, axis_1, axis_2, axis_3, axis) -> None:
-        data_points = self._getTrajectory((10, 65), (155, 95), 200)
-        point_1 = self._map(axis_3, -1, 1, 0, 200)
-        point_2 = self._map(axis_1, -1, 1, 0, 40)
+        precision: int = 1000
+        rotation_precision: int = 40
+        data_points = self._getTrajectory((10, 65), (155, 95), precision)
+        point_1 = self._map(axis_3, -1, 1, 0, precision)
+        point_2 = self._map(
+            self._map(axis_1, -1, 1, 0, precision), 0, precision, 0, rotation_precision)
+
+        print("Point 1: " + str(point_1))
+        print("data_points: " + str(data_points[point_1]))
 
         if axis == "x":
-            self.leg_1.x = 40 - point_2
+            self.leg_1.x = rotation_precision - point_2
             self.leg_3.x = point_2
         elif axis == "y":
             self.leg_1.x = point_2
-            self.leg_3.x = 40 - point_2
+            self.leg_3.x = rotation_precision - point_2
 
         self.leg_1.y = data_points[point_1][0]
         self.leg_1.z = data_points[point_1][1]
@@ -393,7 +307,7 @@ class RobotModel:
         self.leg_3.y = data_points[point_1][0]
         self.leg_3.z = data_points[point_1][1]
 
-        self.leg_4.x = 40 - point_2
+        self.leg_4.x = rotation_precision - point_2
         self.leg_4.y = data_points[point_1][0]
         self.leg_4.z = data_points[point_1][1]
         return None
@@ -414,13 +328,13 @@ class RobotModel:
 
     def up(self, leg: int) -> None:
         if leg == 1:
-            self.leg_1.move(20, 60, 40)
+            self.leg_1.move(20, 60, 45)
         elif leg == 2:
-            self.leg_2.move(20, 60, 40)
+            self.leg_2.move(20, 60, 45)
         elif leg == 3:
-            self.leg_3.move(20, 60, 40)
+            self.leg_3.move(20, 60, 45)
         elif leg == 4:
-            self.leg_4.move(20, 60, 40)
+            self.leg_4.move(20, 60, 45)
 
         return None
 
@@ -518,6 +432,11 @@ class RobotModel:
         elif leg == 4:
             self.leg_4.move(turn,
                             45 + self.increment, 60 + self.increment)
+
+    def smoother(self, y, box_pts):
+        box = np.ones(box_pts)/box_pts
+        y_smooth = np.convolve(y, box, mode='same')
+        return y_smooth
 
 
 if __name__ == "__main__":
