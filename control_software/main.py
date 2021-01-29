@@ -100,8 +100,12 @@ if __name__ == "__main__":
             elif inputs["t"] == 1:
                 axis = "y"
             try:
-                robot.translate(inputs['left_x'],
-                                inputs['left_y'], inputs['right_y'], axis=axis)
+                # robot.translate(inputs['left_x'],
+                #               inputs['left_y'], inputs['right_y'], axis=axis)
+
+                robot.leg_1.x = _map(inputs["right_y"], -1, 1, 1, 100)
+                robot.leg_2.x = _map(inputs["right_x"], -1, 1, 1, 100)
+                robot.reload()
                 print(robot.leg_1.show())
                 print(robot.leg_2.show())
                 print(robot.leg_3.show())
@@ -110,5 +114,8 @@ if __name__ == "__main__":
                 robot.reload()
             except KeyError as e:
                 print("Roll Sticks")
+
+        newLoad = robot.newPayload
+        robot.sendLoad(bytearray(newLoad))
 
         time.sleep(0.01)

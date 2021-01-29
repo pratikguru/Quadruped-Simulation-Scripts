@@ -187,38 +187,13 @@ def plotFrame(theta_1, theta_2, theta_3, pltObj):
     #theta_1 = (np.interp(theta_1, [-180, 180], [0, 180]))
     #theta_2 = (np.interp(-theta_2, [-180, 180], [0, 180]))
     #theta_3 = (np.interp(-theta_3, [-180, 180], [0, 180]))
+    print(theta_1, theta_2, theta_3)
     frame = (getFKFrame(
         np.radians(theta_1),
-        np.radians(theta_2),
-        np.radians(theta_3)))
+        np.radians(-theta_2),
+        np.radians(-theta_3)))
 
-    pltObj.plot(
-        point_set_1[x][0], point_set_1[x][1], 50,
-        "o-",
-        markerSize=2,
-        markerFacecolor="orange",
-        linewidth=1,
-        color="red"
-    )
-
-    pltObj.plot(
-        50, 50, point_set_2[x][1],
-        "o-",
-        markerSize=2,
-        markerFacecolor="orange",
-        linewidth=1,
-        color="red"
-    )
-
-    pltObj.plot(
-        point_set_1[x][0], point_set_1[x][1], -50,
-        "o-",
-        markerSize=2,
-        markerFacecolor="orange",
-        linewidth=1,
-        color="red"
-    )
-
+    pltObj.cla()
     pltObj.plot(
         [0, frame[0][0][3], frame[1][0][3], frame[2][0][3]],
         [0, frame[0][1][3], frame[1][1][3], frame[2][1][3]],
@@ -265,70 +240,6 @@ def update_a2_val(val):
 
 
 buffer = []
-
-for x in range(0, 20):
-
-    points = (getIKPoint(point_set_1[x][0], point_set_1[x][1], 70))
-    print(points)
-    plotFrame(points[0], points[1], points[2], ax)
-
-    ax.plot(
-        point_set_1[x][0], point_set_1[x][1], 70,
-        "o-",
-        markerSize=2,
-        markerFacecolor="orange",
-        linewidth=1,
-        color="red"
-    )
-    plt.pause(0.00001)
-
-for x in range(0, 20):
-
-    points = (getIKPoint(100, 100, point_set_2[x][1]))
-    print(points)
-    plotFrame(points[0], points[1], points[2], ax)
-
-    ax.plot(
-        100, 100, point_set_2[x][1],
-        "o-",
-        markerSize=2,
-        markerFacecolor="orange",
-        linewidth=1,
-        color="red"
-    )
-    plt.pause(0.0001)
-
-for x in range(0, 20):
-
-    points = (getIKPoint(-100, 100, point_set_2[x][1]))
-    print(points)
-    plotFrame(points[0], points[1], points[2], ax)
-
-    ax.plot(
-        -100, 100, point_set_2[x][1],
-        "o-",
-        markerSize=2,
-        markerFacecolor="orange",
-        linewidth=1,
-        color="red"
-    )
-    plt.pause(0.0001)
-
-
-for x in range(0, 20):
-    points = (getIKPoint(point_set_1[x][0], point_set_1[x][1], -100))
-    print(points)
-    plotFrame(points[0], points[1], points[2], ax)
-
-    ax.plot(
-        point_set_1[x][0], point_set_1[x][1], -100,
-        "o-",
-        markerSize=2,
-        markerFacecolor="orange",
-        linewidth=1,
-        color="red"
-    )
-    plt.pause(0.0001)
 
 ax.set_xlim3d(-200, 200)
 ax.set_ylim3d(-200, 200)

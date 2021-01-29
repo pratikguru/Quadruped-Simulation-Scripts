@@ -40,6 +40,9 @@ class RobotModel:
         self.increment: int = 15
         self.activate: bool = activate
 
+        self.previousPayload = []
+        self.newPayload = []
+
     def _map(self, x, in_min, in_max, out_min, out_max) -> int:
         return int((x-in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
 
@@ -51,31 +54,37 @@ class RobotModel:
         return sum([x for x in range(0, smooth)]) / smooth
 
     def sendLoad(self, load: list) -> None:
-        if self.activate:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.connect((self.host, self.port))
-                s.sendall(load)
-                s.close()
-            return None
+        if self.previousPayload == self.newPayload:
+            print("Old State")
         else:
-            return None
+
+            if self.activate:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    s.connect((self.host, self.port))
+                    s.sendall(load)
+                    s.close()
+                return None
+            else:
+                return None
+        self.previousPayload = load
 
     def restart(self):
         print("Restarting Robot")
         self.sendLoad(load=bytearray([9]))
 
     def reload(self):
-        self.sendLoad(bytearray(
-            [
-                1,
-                int(self.leg_1.x), int(self.leg_2.x), int(
-                    self.leg_3.x), int(self.leg_4.x),
-                int(self.leg_1.y), int(self.leg_2.y), int(
-                    self.leg_3.y), int(self.leg_4.y),
-                int(self.leg_1.z), int(self.leg_2.z), int(
-                    self.leg_3.z), int(self.leg_4.z)
-            ]
-        ))
+        self.newPayload = [
+            2,
+            int(self.leg_1.x), int(self.leg_2.x), int(
+                self.leg_3.x), int(self.leg_4.x),
+            int(self.leg_1.y), int(self.leg_2.y), int(
+                self.leg_3.y), int(self.leg_4.y),
+            int(self.leg_1.z), int(self.leg_2.z), int(
+                self.leg_3.z), int(self.leg_4.z)
+        ]
+        # self.sendLoad(bytearray(
+        #     self.newPayload
+        # ))
 
     def trotTraverse(self, direction):
         stepInterval: float = 0.3
