@@ -174,22 +174,6 @@ void setup()
   getIk(globalX, globalY, globalZ, 2);
   getIk(globalX, globalY, globalZ, 3);
   getIk(globalX, globalY, globalZ, 4);
-
-  delay(2000);
-
-  getIk(0, 60, 40, 1);
-  delay(2000);
-  getIk(40, 20, 40, 1);
-  delay(2000);
-  getIk(-40, 20, 40, 1);
-
-  delay(2000);
-
-  getIk(0, 50, 60, 1);
-  delay(2000);
-  getIk(-40, 20, 60, 1);
-  delay(2000);
-  getIk(40, 20, 60, 1);
 }
 
 void loop()

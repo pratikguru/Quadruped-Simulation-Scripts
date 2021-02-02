@@ -24,7 +24,7 @@ class Leg:
 
 
 class RobotModel:
-    def __init__(self, host: int, port: int = 80, activate: bool = False, mode: int = 1):
+    def __init__(self, host: int, port: int = 80, activate: bool = False, mode: int = 1, robotName: str = ""):
 
         # Connecting variables.
         self.host: str = host
@@ -42,6 +42,15 @@ class RobotModel:
 
         self.previousPayload = []
         self.newPayload = []
+
+        self.robotName: str = robotName
+
+    def printRobotCredentials(self) -> str:
+        return 'Robot Name: ' + str(self.robotName) + \
+               '\nRobot Port: ' + str(self.port) + \
+               '\nRobot Host: ' + str(self.host) + \
+               '\nRobot Mode: ' + str(self.mode) + \
+               '\nRobot Activate: ' + str(self.activate)
 
     def _map(self, x, in_min, in_max, out_min, out_max) -> int:
         return int((x-in_min) * (out_max - out_min) / (in_max - in_min) + out_min)

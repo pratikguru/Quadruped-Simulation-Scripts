@@ -29,7 +29,7 @@ if __name__ == "__main__":
     axis: str = "y"
 
     while True:
-        robot: RobotModel = RobotModel("192.168.0.248", 80, True)
+        robot: RobotModel = RobotModel("192.168.0.125", 80, True, 1)
 
         os.system("clear")
         inputs: dict = (ps4.listen())
@@ -42,8 +42,12 @@ if __name__ == "__main__":
         if rotateMode:
             print("Axis: " + str(axis))
 
-        if inputs["option"]:
+        if inputs["right"]:
+          robot.mode = 3 
+          robot.reload()
 
+
+        if inputs["option"]:
             toggle_debug = not toggle_debug
 
         if toggle_debug:
@@ -55,7 +59,7 @@ if __name__ == "__main__":
 
         if inputs["r1"]:
             print("Rotating")
-            robot.trotRotate(direction=1)
+            robot.trotRotate2(direction=1)
             # robot.trotTraverse(direction=1)
 
         if inputs["r2"]:
@@ -66,7 +70,7 @@ if __name__ == "__main__":
 
         if inputs["l1"]:
             print("Rotating")
-            robot.trotRotate(direction=0)
+            robot.trotRotate2(direction=0)
 
         if inputs["s"] == 1 and not inputs["o"] == 1:
             print("Toggling Translate Mode")
@@ -91,6 +95,7 @@ if __name__ == "__main__":
                 robot.reload()
             except KeyError as e:
                 print("Roll Sticks")
+
         if inputs["pad"] == True:
             robot.restart()
 
@@ -100,22 +105,21 @@ if __name__ == "__main__":
             elif inputs["t"] == 1:
                 axis = "y"
             try:
-                # robot.translate(inputs['left_x'],
-                #               inputs['left_y'], inputs['right_y'], axis=axis)
+                robot.translate(inputs['left_x'],
+                                inputs['left_y'], inputs['right_y'], axis=axis)
 
-                robot.leg_1.x = _map(inputs["right_y"], -1, 1, 1, 100)
-                robot.leg_2.x = _map(inputs["right_x"], -1, 1, 1, 100)
+                #robot.leg_1.x = _map(inputs["right_y"], -1, 1, 1, 100)
+                #robot.leg_2.x = _map(inputs["right_x"], -1, 1, 1, 100)
+                #robot.increment = _map(inputs["left_y"], -1, 1, -30, 30)
+
                 robot.reload()
                 print(robot.leg_1.show())
                 print(robot.leg_2.show())
                 print(robot.leg_3.show())
                 print(robot.leg_4.show())
 
-                robot.reload()
             except KeyError as e:
                 print("Roll Sticks")
 
-        newLoad = robot.newPayload
-        robot.sendLoad(bytearray(newLoad))
-
-        time.sleep(0.01)
+        # newLoad = robot.newPayload
+        # robot.sendLoad(bytearray(newLoad))
